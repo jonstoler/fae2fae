@@ -1,0 +1,16 @@
+{
+	"name": "fae2fae_server",
+	"version": "0.0.0",
+	"description": "play fate accelerated online with friends",
+	"main": "index.js",
+	"author": "Jonathan Stoler",
+	"license": "CC-BY-NC-4.0",
+	"repository": "https://gitlab.com/jonstoler/fae2fae",
+	"dependencies": {
+		"socket.io": "2.0.1",
+		"express": "4.13.4"
+	},
+	"scripts": {
+		"start": "node index.js"
+	}
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/mini-dark.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/fae2fae.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta lang="en">
+		<meta charset="utf-8">
+		<script type="text/javascript" src="js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="roll" class="container">
+			<h1>Fate Dice Roller</h1>
+			<table id="log">
+				<tr v-for="roll in rolls">
+					<td><strong>{{ roll.name }}</strong> rolled a {{ roll.roll }}.</td>
+				</tr>
+			</table>
+			<input type="text" placeholder="Name" v-model="name">
+			<select id="modifier">
+				<option value="-2">-2</option>
+				<option value="-1">-1</option>
+				<option value="+0" selected>+0</option>
+				<option value="+1">+1</option>
+				<option value="+2">+2</option>
+			</select>
+			<button id="roller">Roll</button>
+		</div>
+		<footer>
+			<p>fae2fae is designed and developed by <a href="https://jonstoler.me">Jonathan Stoler</a>. fae2fae uses <a href="http://minicss.org">mini.css</a> and <a href="https://socket.io">socket.io</a>.</p>
+			<p>Fate Accelerated is licensed from <a href="http://evilhat.com">Evil Hat Productions</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</p>
+		</footer>
+		<script type="text/javascript" src="/js/socket.io.slim.js"></script>
+		<script type="text/javascript" src="/js/fae2fae.js"></script>
+	</body>
+</html>
