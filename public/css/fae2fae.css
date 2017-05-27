@@ -1,5 +1,125 @@
+.tabs > [type="radio"]:checked + label + div, .tabs.stacked > [type="checkbox"]:checked + label + div {
+  height: auto; }
+
+.tabs button.primary, .tabs .button.primary {
+  position: relative;
+  left: 100%;
+  transform: translateX(-100%);
+  margin-left: -20px; }
+
+.mkchar input, .mkchar textarea {
+  box-sizing: border-box;
+  width: 100%; }
+
+.modal h3 {
+  text-align: center; }
+
+.modal .close {
+  position: absolute;
+  top: 0;
+  right: 5px; }
+
+.modal .card {
+  z-index: 1000;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: #232e33;
+  max-width: 40rem;
+  max-height: 40rem;
+  overflow-y: scroll; }
+
+.modal .overlay {
+  position: fixed;
+  background-color: black;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000; }
+
+.modal .card, .modal .close, .modal .overlay {
+  display: none; }
+
+.modal input[name="modal"] ~ .card {
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.3s; }
+
+.modal input[name="modal"] ~ .overlay {
+  max-height: 0; }
+
+.modal input[name="modal"]:checked ~ .card {
+  opacity: 1;
+  max-height: 70%;
+  overflow-y: scroll; }
+
+.modal input[name="modal"]:checked ~ .overlay {
+  opacity: 0.8;
+  max-height: 100%; }
+
+.modal input[name="modal"]:checked ~ .card, .modal input[name="modal"]:checked ~ .close, .modal input[name="modal"]:checked ~ .overlay {
+  display: block; }
+
+html, body {
+  height: 100%; }
+
+a {
+  text-decoration: none; }
+
+button[disabled] {
+  opacity: 0.5; }
+  button[disabled]:hover {
+    cursor: not-allowed; }
+
+input:not([type]).error, input[type="text"].error {
+  border: 1px solid #ff4136 !important; }
+
+#toast {
+  transition: opacity 0.3s;
+  opacity: 0; }
+
+#content #video .player-id {
+  font-family: monospace;
+  color: #aaa;
+  position: absolute;
+  right: 0.5rem;
+  top: 2rem; }
+
+#content #video .close {
+  position: absolute;
+  top: 0;
+  right: 0; }
+
+#content #video mark {
+  background-color: #3d5977;
+  margin: 0 0.5rem; }
+
+#content #video .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  border-radius: 50%; }
+  #content #video .dot.online {
+    background-color: #2ecc40; }
+  #content #video .dot.disconnected {
+    background-color: #ff851b; }
+  #content #video .dot.offline {
+    background-color: #ff4136; }
+
+#content #video .videostream {
+  width: 100%;
+  background-color: black; }
+
+#sidebar {
+  border-right: 1px solid #595759; }
+
 footer {
-  padding: 6px 10px 6px; }
+  padding: 6px 10px 6px;
+  text-align: center; }
   footer p {
     font-size: 0.9em;
     color: #969596; }

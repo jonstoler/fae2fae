@@ -7,28 +7,253 @@
 		<meta lang="en">
 		<meta charset="utf-8">
 		<script type="text/javascript" src="js/vue.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+		<title>fae2fae</title>
 	</head>
 	<body>
-		<div id="roll" class="container">
-			<h1>Fate Dice Roller</h1>
-			<table id="log">
-				<tr v-for="roll in rolls">
-					<td><strong>{{ roll.name }}</strong> rolled a {{ roll.roll }}.</td>
-				</tr>
-			</table>
-			<input type="text" placeholder="Name" v-model="name">
-			<select id="modifier">
-				<option value="-2">-2</option>
-				<option value="-1">-1</option>
-				<option value="+0" selected>+0</option>
-				<option value="+1">+1</option>
-				<option value="+2">+2</option>
-			</select>
-			<button id="roller">Roll</button>
+		<div id="join" class="container">
+			<center>
+				<h1>fae2fae</h1>
+				<div class="card">
+					<h3 style="text-align: center">Join the Game</h3>
+					<div class="section">
+						<input id="player-name" placeholder="Your Name">
+					</div>
+					<div class="section">
+						<center>
+							<div id="gm-search">
+								<div class="spinner-donut"></div>
+								<p id="gm-search-txt">Searching for GM...</p>
+							</div>
+							<div id="gm-found" class="hidden">
+								<p><strong id="gm-id">Somebody</strong> is your GM.</p>
+							</div>
+							<div id="gm-not-found" class="hidden">
+								<p>No GM found!</p>
+								<button id="gm-join">Join as GM</button>
+							</div>
+						</center>
+					</div>
+					<div class="section">
+						<center>
+							<button id="pc-join">Join as PC</button>
+						</center>
+					</div>
+				</div>
+			</center>
 		</div>
+			<div class="modal">
+				<input type="checkbox" name="modal" id="mkchar">
+				<label for="mkchar" class="overlay"></label>
+				<div class="card mkchar">
+					<h3>Create A Character <label for="mkchar" class="close"></label></h3>
+					<div class="section">
+						<div class="tabs">
+							<input type="radio" name="mkchar" checked id="mkchar1" aria-hidden="true">
+							<label for="mkchar1" aria-hidden="true">Aspects</label>
+							<div>
+								<div class="tabs stacked">
+									<input type="checkbox" name="mkchar-aspect" id="mkchar-aspect1" aria-hidden="true">
+									<label for="mkchar-aspect1" aria-hidden="true">What are aspects?</label>
+									<div>
+										<p>An <strong>aspect</strong> is a word, phrase, or sentence that describes something centrally important to your character. It can be a motto your character lives by, a personality quirk, a description of a relationship you have with another character, an important possession or bit of equipment your character has, or any other part of your character that is vitally important.</p>
+										<p>Aspects allow you to change the story in ways that tie in with your character's tendencies, skills, or problems. You can also use them to establish facts about the setting, such as the presence of magic or the existence of a useful ally, dangerous enemy, or secret organization.</p>
+									</div>
+								</div>
+								<hr>
+								<p>First, decide on your character's <strong>high concept</strong>. This is a single phrase or sentence that sums up your character, saying who you are, what you do, what your "deal" is. When you think about your high concept, try to think of two things: how this aspect could help you, and how it might make things harder for you. Good high concept aspects do both.</p>
+								<input placeholder="High Concept">
+								<p>Next, decide on the thing that always gets you into <strong>trouble</strong>. It could be a personal weakness, or a recurring enemy, or an important obligation&mdash;anything that makes your life complicated.</p>
+								<input placeholder="Trouble">
+								<p>Now compose another aspect. Think of something really important or interesting about your character. Are they the strongest person in their hometown? Do they carry a mighty sword known through history? Do they talk to much? Are they filthy rich?</p>
+								<input placeholder="Aspect 3"><br>
+								<h5>Optional: One or Two Additional Aspects</h5>
+								<p>If you wish, you may create one or two more aspects, These aspects might describe your character's relationship with other player characters or with an NPC. Or, like the third aspect you composed above, it might describe someething especially interesting about your character.</p>
+								<p>If you prefer, you can leave one or both of these aspects blank right now and fill them in later, after the game has started.</p>
+								<input placeholder="Aspect 4"><br>
+								<input placeholder="Aspect 5"><br>
+								<label class="primary button" for="mkchar2">Next</label>
+							</div>
+							<input type="radio" name="mkchar" id="mkchar2" aria-hidden="true">
+							<label for="mkchar2" aria-hidden="true">Name and Appearance</label>
+							<div>
+								<p>Describe your character's appearance and give them a name.</p>
+								<input placeholder="Name"><br>
+								<textarea placeholder="Description"></textarea>
+								<br>
+								<label class="primary button" for="mkchar3">Next</label>
+							</div>
+							<input type="radio" name="mkchar" id="mkchar3" aria-hidden="true">
+							<label for="mkchar3" aria-hidden="true">Approaches</label>
+							<div>
+								<p>Approaches are descriptions of <em>how</em> you accomplish tasks. Each approach is rated with a bonus. Choose one at Good (+3), two at Fair (+2), two at Average (+1), and one at Medicore (+0). You can improve these later.</p>
+								<table>
+									<tr><td>Careful</td><td><div class="button-group"><button>Good</button><button>Fair</button><button>Average</button><button>Mediocre</button></div></td></tr>
+									<tr><td>Clever</td><td></td></tr>
+									<tr><td>Flashy</td><td></td></tr>
+									<tr><td>Forceful</td><td></td></tr>
+									<tr><td>Quick</td><td></td></tr>
+									<tr><td>Sneaky</td><td></td></tr>
+								</table>
+								<label class="primary button" for="mkchar4">Next</label>
+							</div>
+							<input type="radio" name="mkchar" checked id="mkchar4" aria-hidden="true">
+							<label for="mkchar4" aria-hidden="true">Stunts and Refresh</label>
+							<div>
+								<p>A <strong>stunt</strong> is a special trait that changes the way an approach works for your character. Generally, stunts give you a bonus (almost always +2) to a certain approach when used with a particular action under specific circumsntances. Choose one stunt to start, or you can wait and add a stunt during the game. Later, when your character advances, you can add more.</p>
+								<textarea placeholder="Stunts"></textarea>
+								<button class="primary" id="save-character">Save Character</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<div class="hidden container" id="play">
+			<div class="row">
+				<div class="col-sm-12 col-md-3" id="sidebar">
+					<div id="log">
+						<div v-for="entry in log">
+							<p>{{ entry.text }}</p>
+						</div>
+					</div>
+					<div class="tabs stacked hidden-sm">
+						<input type="checkbox" name="accordion" id="ref" aria-hidden="true">
+						<label for="ref" aria-hidden="true">Reference</label>
+						<div>
+							<div class="tabs stacked">
+								<input type="checkbox" name="accordion" id="cheat1" aria-hidden="true">
+								<label for="cheat1" aria-hidden="true">The Ladder</label>
+								<div>
+									<h3>The Ladder</h3>
+									<table class="striped">
+										<tbody>
+											<tr><td>+8</td><td>Legendary</td></tr>
+											<tr><td>+7</td><td>Epic</td></tr>
+											<tr><td>+6</td><td>Fantastic</td></tr>
+											<tr><td>+5</td><td>Superb</td></tr>
+											<tr><td>+4</td><td>Great</td></tr>
+											<tr><td>+3</td><td>Good</td></tr>
+											<tr><td>+2</td><td>Fair</td></tr>
+											<tr><td>+1</td><td>Average</td></tr>
+											<tr><td>0</td><td>Mediocre</td></tr>
+											<tr><td>-1</td><td>Poor</td></tr>
+											<tr><td>-2</td><td>Terrible</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<input type="checkbox" name="accordion" id="cheat2" aria-hidden="true">
+								<label for="cheat2" aria-hidden="true">Outcomes</label>
+								<div>
+									<h3>Outcomes</h3>
+									<p>Your result, versus your target's:</p>
+									<ul>
+										<li><strong>Lower:</strong> Fail.</li>
+										<li><strong>Equal:</strong> Tie.</li>
+										<li><strong>Higher by 1 or 2:</strong> Succeed.</li>
+										<li><strong>Highber by 3 or more:</strong> Succed with Style.</li>
+									</ul>
+								</div>
+								<input type="checkbox" name="accordion" id="cheat3" aria-hidden="true">
+								<label for="cheat3" aria-hidden="true">Create an Advantage</label>
+								<div>
+									<h3>Creating or discovering aspects:</h3>
+									<ul>
+										<li><strong>Fail:</strong> Don't create or discover, or you do but your opponent (not you) gets a free invocation.</li>
+										<li><strong>Tie:</strong> Get a boost if creating new, or treat as success if looking for existing.</li>
+										<li><strong>Succeed:</strong> Create or discover the aspect, get a free invocation on it.</li>
+										<li><strong>Succeed with Style:</strong> Create or discover the aspect, get two free invocations.</li>
+									</ul>
+									<h3>On an aspect you already know about:</h3>
+									<ul>
+										<li><strong>Fail:</strong> No additional benefit.</li>
+										<li><strong>Tie:</strong> Generate one free invocation on the aspect.</li>
+										<li><strong>Succeed:</strong> Generate one free invocation on the aspect.</li>
+										<li><strong>Succeed with Style:</strong> Generate two free invocations on the aspect.</li>
+									</ul>
+								</div>
+								<input type="checkbox" name="accordion" id="cheat4" aria-hidden="true">
+								<label for="cheat4" aria-hidden="true">Overcome</label>
+								<div>
+									<h3>Overcome</h3>
+									<ul>
+										<li><strong>Fail:</strong> Fail, or succeed at a serious cost.</li>
+										<li><strong>Tie:</strong> Succeed at minor cost.</li>
+										<li><strong>Succeed:</strong> You accomplish your goal.</li>
+										<li><strong>Succeed with Style:</strong> You accomplish your goal and generate a boost.</li>
+									</ul>
+								</div>
+								<input type="checkbox" name="accordion" id="cheat5" aria-hidden="true">
+								<label for="cheat5" aria-hidden="true">Attack</label>
+								<div>
+									<h3>Attack</h3>
+									<ul>
+										<li><strong>Fail:</strong> No effect.</li>
+										<li><strong>Tie:</strong> Attack doesn't harm the target, but you gain a boost.</li>
+										<li><strong>Succeed:</strong> Attack hits and causes damage.</li>
+										<li><strong>Succeed with Style:</strong> Attack hits and causes damage. May reduce damage by one to generate a boost.</li>
+									</ul>
+								</div>
+								<input type="checkbox" name="accordion" id="cheat6" aria-hidden="true">
+								<label for="cheat6" aria-hidden="true">Defend</label>
+								<div>
+									<h3>Defend</h3>
+									<ul>
+										<li><strong>Fail:</strong> You suffer the consequences of your opponent's success.</li>
+										<li><strong>Tie:</strong> Lookat your opponent's action to see what happens.</li>
+										<li><strong>Succeed:</strong> Your opponent doesn't get what they want.</li>
+										<li><strong>Succeed with Style:</strong> Your opponent doesn't get what they want, and you get a boost.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-9 col-lg-6" id="content">
+					<h2>Discovered Aspects</h2>
+					<h2>Video</h2>
+					<div class="row" id="video">
+						<div v-for="player in sortedPlayers" class="card">
+							<div class="section">
+								<h3>{{ player.id != id ? player.name : "Me" }}<mark v-if="player.gm">GM</mark><span class="dot" :class="player.status"></span>
+</h3>
+								<small v-if="gm" class="player-id">{{ player.id }}</small>
+								<span class="close kick-player" v-if="gm" :data-id="player.id"></span>								<canvas class="videostream"></canvas>
+							</div>
+						</div>
+					</div>
+					<h2>Actions</h2>
+					<button>New Scene</button>
+					<button>New Character</button>
+					<button>New Mook</button>
+					<div class="button-group">
+						<button>Create An Advantage</button>
+						<button>Overcome</button>
+						<button>Attack</button>
+						<button>Defend</button>
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-3">
+					<div id="characters">
+						<div class="tabs stacked">
+							<input type="checkbox" checked name="accordion" id="char" aria-hidden="true">
+							<label for="char" aria-hidden="true">Characters</label>
+							<div>
+								<div class="card" v-for="character in sortedCharacters">
+								</div>
+								<label class="button primary" for="mkchar">Create Character</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<center>
+			<button class="primary" id="sync-btn">Sync</button>
+			<button class="secondary" id="reset-btn">Reset</button>
+		</center>
+		<span class="toast" id="toast"></span>
 		<footer>
-			<p>fae2fae is designed and developed by <a href="https://jonstoler.me">Jonathan Stoler</a>. fae2fae uses <a href="http://minicss.org">mini.css</a> and <a href="https://socket.io">socket.io</a>.</p>
-			<p>Fate Accelerated is licensed from <a href="http://evilhat.com">Evil Hat Productions</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</p>
+			<p>fae2fae is designed and developed by <a href="https://jonstoler.me">Jonathan Stoler</a>. fae2fae uses <a href="http://minicss.org">mini.css</a> and <a href="https://socket.io">socket.io</a>. Fate Accelerated is licensed from <a href="http://evilhat.com">Evil Hat Productions</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</p>
 		</footer>
 		<script type="text/javascript" src="/js/socket.io.slim.js"></script>
 		<script type="text/javascript" src="/js/fae2fae.js"></script>

@@ -1,5 +1,175 @@
+.tabs > [type="radio"]:checked + label + div, .tabs.stacked > [type="checkbox"]:checked + label + div {
+	height: auto;
+}
+
+.tabs {
+	button, .button {
+		&.primary {
+			position: relative;
+			left: 100%;
+			transform: translateX(-100%);
+			margin-left: -20px;
+		}
+	}
+}
+
+.mkchar {
+	input, textarea {
+		box-sizing: border-box;
+		width: 100%;
+	}
+}
+
+.modal {
+
+	h3 {
+		text-align: center;
+	}
+
+	.close {
+		position: absolute;
+		top: 0;
+		right: 5px;
+	}
+
+	.card {
+		z-index: 1000;
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translateX(-50%) translateY(-50%);
+		background-color: #232e33;
+		max-width: 40rem;
+		max-height: 40rem;
+		overflow-y: scroll;
+	}
+	
+	.overlay {
+		position: fixed;
+		background-color: black;
+		opacity: 0;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000;
+	}
+	.card, .close, .overlay {
+		display: none;
+	}
+
+	input[name="modal"] {
+		~ .card {
+			opacity: 0;
+			overflow: hidden;
+			transition: opacity 0.3s;
+		}
+		~ .overlay {
+			max-height: 0;
+		}
+
+		&:checked {
+			~ .card {
+				opacity: 1;
+				max-height: 70%;
+				overflow-y: scroll;
+			}
+			~ .overlay {
+				opacity: 0.8;
+				max-height: 100%;
+			}
+			~ {
+				.card, .close, .overlay {
+					display: block;
+				}
+			}
+		}
+	}
+}
+
+html, body {
+	height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+button[disabled] {
+	opacity: 0.5;
+
+	&:hover {
+		cursor: not-allowed;
+	}
+}
+
+input {
+	&:not([type]), &[type="text"] {
+		&.error {
+			border: 1px solid #ff4136 !important;
+		}
+	}
+}
+
+#toast {
+	transition: opacity 0.3s;
+	opacity: 0;
+}
+
+#content {
+	#video {
+		.player-id {
+			font-family: monospace;
+			color: #aaa;
+			position: absolute;
+			right: 0.5rem;
+			top: 2rem;
+		}
+
+		.close {
+			position: absolute;
+			top: 0;
+			right: 0;
+		}
+
+		mark {
+			background-color: #3d5977;
+			margin: 0 0.5rem;
+		}
+
+		.dot {
+			display: inline-block;
+			width: 10px;
+			height: 10px;
+			margin-left: 5px;
+			border-radius: 50%;
+
+			&.online {
+				background-color: #2ecc40;
+			}
+			&.disconnected {
+				background-color: #ff851b;
+			}
+			&.offline {
+				background-color: #ff4136;
+			}
+		}
+
+		.videostream {
+			width: 100%;
+			background-color: black;
+		}
+	}
+}
+
+#sidebar {
+	border-right: 1px solid #595759;
+}
+
 footer {
 	padding: 6px 10px 6px;
+	text-align: center;
+	// background-color: #e6e4e6;
 
 	p {
 		font-size: 0.9em;
