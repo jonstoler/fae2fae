@@ -47,7 +47,44 @@
 				return this.characters;
 			}
 		}
-	})
+	});
+
+	var charApproaches = new Vue({
+		el: "#approaches-table",
+		data: {
+			total: { good: 1, fair: 2, average: 2, mediocre: 1 },
+			approaches: { careful: false, clever: false, flashy: false, forceful: false, quick: false, sneaky: false }
+		},
+		computed: {
+			remaining: function(){
+				var left = { good: 0, fair: 0, average: 0, mediocre: 0 };
+				for(var approach in this.approaches){
+					if(this.approaches[approach]){
+						left[this.approaches[approach]]++;
+					}
+				}
+				return {
+					good: this.total.good - left.good,
+					fair: this.total.fair - left.fair,
+					average: this.total.average - left.average,
+					mediocre: this.total.mediocre - left.mediocre
+				}
+			},
+		}
+	});
+	var charStunts = new Vue({
+		el: "#mkchar-stunts",
+		data: {
+			stunts: [
+				{ name: "", description: "" }
+			]
+		},
+		methods: {
+			newstunt: function(){
+				this.stunts.push({ name: "", description: "" });
+			}
+		}
+	});
 
 	var socket = io("http://localhost:3000");
 	socket.on("connect", function(){
@@ -131,6 +168,9 @@
 		});
 
 		socket.on("kick", function(data){
+			$('.modal input[type=checkbox]').each(function(){
+				$(this).prop("checked", false);
+			});
 			document.location.reload();
 		});
 	});
@@ -138,7 +178,7 @@
 	$("#sync-btn").on("click", function(){ socket.emit("sync_all"); });
 	$("#reset-btn").on("click", function(){ socket.emit("reset"); });
 
-	$("#video").on("click", ".close", function(e){
+	$("#players").on("click", ".close", function(e){
 		var id = $(this).attr("data-id");
 		socket.emit("pc_kick", {id: id});
 		for(var i = 0; i < fae.players.length; i++){
@@ -148,21 +188,49 @@
 			}
 		}
 	});
+	$("#characters").on("click", ".close", function(e){
+		var id= $(this).attr("data-id");
+		socket.emit("char_delete", {id: id});
+		for(var i = 0; i < fae.characters.length; i++){
+			if(fae.characters[i].id == id){
+				fae.characters.splice(i, 1);
+				break;
+			}
+		}
+	});
 
 	$("#save-character").on("click", function(e){
+		var character = {
+			name: "",
+			description: "",
+			id: generateID(),
+			player: fae.id,
+			aspects: [],
+			approaches: {},
+			stunts: []
+		};
+		character.name = $("#mkchar-id-name").val();
+		character.description = $("#mkchar-id-description").val();
+		character.aspects.push($("#mkchar-aspect-high-concept").val());
+		character.aspects.push($("#mkchar-aspect-trouble").val());
+		for(var i = 3; i < 6; i++){
+			var aspect = $("#mkchar-aspect-" + i).val();
+			if(aspect){
+				character.aspects.push(aspect);
+			}
+		}
+		character.stunts.push($("#mkchar-stunts").val());
+
 		$("#mkchar").prop("checked", false);
 		toast("Character saved.");
-		fae.characters.push({});
-		console.log(fae.characters);
-		socket.emit("char_new", {});
+		fae.characters.push(character);
+		socket.emit("char_new", character);
 	});
 
 	$(document.body).on("keydown", function(e){
 		if(e.keyCode == 27){ // ESC
 			// close modals
-			console.log("closing modals");
 			$('.modal input[type=checkbox]').each(function(){
-				console.log(this);
 				$(this).prop("checked", false);
 			});
 		}

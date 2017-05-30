@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="css/mini-dark.min.css" />
-		<link rel="stylesheet" type="text/css" href="css/fae2fae.css" />
+		<link rel="stylesheet" type="text/css" href="/css/mini-dark.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/fae2fae.css" />
+		<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta lang="en">
 		<meta charset="utf-8">
@@ -62,38 +64,115 @@
 								</div>
 								<hr>
 								<p>First, decide on your character's <strong>high concept</strong>. This is a single phrase or sentence that sums up your character, saying who you are, what you do, what your "deal" is. When you think about your high concept, try to think of two things: how this aspect could help you, and how it might make things harder for you. Good high concept aspects do both.</p>
-								<input placeholder="High Concept">
+								<input id="mkchar-aspect-high-concept-name" placeholder="High Concept Name">
+								<textarea id="mkchar-aspect-high-concept-description" placeholder="High Concept Description"></textarea>
 								<p>Next, decide on the thing that always gets you into <strong>trouble</strong>. It could be a personal weakness, or a recurring enemy, or an important obligation&mdash;anything that makes your life complicated.</p>
-								<input placeholder="Trouble">
+								<input id="mkchar-aspect-trouble" placeholder="Trouble Name">
+								<textarea id="mkchar-aspect-trouble-description" placeholder="Trouble Description"></textarea>
 								<p>Now compose another aspect. Think of something really important or interesting about your character. Are they the strongest person in their hometown? Do they carry a mighty sword known through history? Do they talk to much? Are they filthy rich?</p>
-								<input placeholder="Aspect 3"><br>
+								<input id="mkchar-aspect-3-name" placeholder="Aspect 3 Name"><br>
+								<textarea id="mkchar-aspect-3-description" placeholder="Aspect 3 Description"></textarea>
 								<h5>Optional: One or Two Additional Aspects</h5>
 								<p>If you wish, you may create one or two more aspects, These aspects might describe your character's relationship with other player characters or with an NPC. Or, like the third aspect you composed above, it might describe someething especially interesting about your character.</p>
 								<p>If you prefer, you can leave one or both of these aspects blank right now and fill them in later, after the game has started.</p>
-								<input placeholder="Aspect 4"><br>
-								<input placeholder="Aspect 5"><br>
+								<input id="mkchar-aspect-4-name" placeholder="Aspect 4 Name"><br>
+								<textarea id="mkchar-aspect-4-description" placeholder="Aspect 4 Description"></textarea>
+								<br>
+								<input id="mkchar-aspect-5-name" placeholder="Aspect 5 Name"><br>
+								<textarea id="mkchar-aspect-5-description" placeholder="Aspect 5 Description"></textarea>
 								<label class="primary button" for="mkchar2">Next</label>
 							</div>
 							<input type="radio" name="mkchar" id="mkchar2" aria-hidden="true">
 							<label for="mkchar2" aria-hidden="true">Name and Appearance</label>
 							<div>
 								<p>Describe your character's appearance and give them a name.</p>
-								<input placeholder="Name"><br>
-								<textarea placeholder="Description"></textarea>
+								<input id="mkchar-id-name" placeholder="Character Name"><br>
+								<textarea id="mkchar-id-description" placeholder="Character Description"></textarea>
 								<br>
 								<label class="primary button" for="mkchar3">Next</label>
 							</div>
 							<input type="radio" name="mkchar" id="mkchar3" aria-hidden="true">
 							<label for="mkchar3" aria-hidden="true">Approaches</label>
 							<div>
-								<p>Approaches are descriptions of <em>how</em> you accomplish tasks. Each approach is rated with a bonus. Choose one at Good (+3), two at Fair (+2), two at Average (+1), and one at Medicore (+0). You can improve these later.</p>
-								<table>
-									<tr><td>Careful</td><td><div class="button-group"><button>Good</button><button>Fair</button><button>Average</button><button>Mediocre</button></div></td></tr>
-									<tr><td>Clever</td><td></td></tr>
-									<tr><td>Flashy</td><td></td></tr>
-									<tr><td>Forceful</td><td></td></tr>
-									<tr><td>Quick</td><td></td></tr>
-									<tr><td>Sneaky</td><td></td></tr>
+								<p>Approaches are descriptions of <em>how</em> you accomplish tasks. Each approach is rated with a bonus. Choose one at Good (+3), two at Fair (+2), two at Average (+1), and one at Mediocre (+0). You can improve these later.</p>
+								<table id="approaches-table">
+									<tr>
+										<th>Remaining</th>
+										<th>
+											<div class="button-group">
+												<span class="button" :class="{ negative: remaining.good < 0, zero: remaining.good == 0 }">{{ remaining.good }} Good <br>(+3)</span>
+												<span class="button" :class="{ negative: remaining.fair < 0, zero: remaining.fair == 0 }">{{ remaining.fair }} Fair<br>(+2)</span>
+												<span class="button" :class="{ negative: remaining.average < 0, zero: remaining.average == 0 }">{{ remaining.average }} Average<br>(+1)</span>
+												<span class="button" :class="{ negative: remaining.mediocre < 0, zero: remaining.mediocre == 0 }">{{ remaining.mediocre }} Mediocre<br>(+0)</span>
+											</div>
+										</th>
+									</tr>
+									<tr>
+										<td>Careful</td>
+										<td>
+											<div class="button-group" id="careful-rating">
+												<input type="radio" value="good" id="careful-rating1" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating1">Good</label>
+												<input type="radio" value="fair" id="careful-rating1" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating2">Fair</label>
+												<input type="radio" value="average" id="careful-rating3" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating3">Average</label>
+												<input type="radio" value="mediocre" id="careful-rating4" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>Clever</td>
+										<td>
+											<div class="button-group" id="clever-rating">
+												<input type="radio" value="good" id="clever-rating1" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating1">Good</label>
+												<input type="radio" value="fair" id="clever-rating2" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating2">Fair</label>
+												<input type="radio" value="average" id="clever-rating3" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating3">Average</label>
+												<input type="radio" value="mediocre" id="clever-rating4" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>Flashy</td>
+										<td>
+											<div class="button-group" id="flashy-rating">
+												<input type="radio" value="good" id="flashy-rating1" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating1">Good</label>
+												<input type="radio" value="fair" id="flashy-rating2" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating2">Fair</label>
+												<input type="radio" value="average" id="flashy-rating3" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating3">Average</label>
+												<input type="radio" value="mediocre" id="flashy-rating4" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>Forceful</td>
+										<td>
+											<div class="button-group" id="forceful-rating">
+												<input type="radio" value="good" id="forceful-rating1" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating1">Good</label>
+												<input type="radio" value="fair" id="forceful-rating2" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating2">Fair</label>
+												<input type="radio" value="average" id="forceful-rating3" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating3">Average</label>
+												<input type="radio" value="mediocre" id="forceful-rating4" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>Quick</td>
+										<td>
+											<div class="button-group" id="quick-rating">
+												<input type="radio" value="good" id="quick-rating1" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating1">Good</label>
+												<input type="radio" value="fair" id="quick-rating2" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating2">Fair</label>
+												<input type="radio" value="average" id="quick-rating3" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating3">Average</label>
+												<input type="radio" value="mediocre" id="quick-rating4" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>Sneaky</td>
+										<td>
+											<div class="button-group" id="sneaky-rating">
+												<input type="radio" value="good" id="sneaky-rating1" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating1">Good</label>
+												<input type="radio" value="fair" id="sneaky-rating2" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating2">Fair</label>
+												<input type="radio" value="average" id="sneaky-rating3" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating3">Average</label>
+												<input type="radio" value="mediocre" id="sneaky-rating4" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating4">Mediocre</label>
+											</div>
+										</td>
+									</tr>
 								</table>
 								<label class="primary button" for="mkchar4">Next</label>
 							</div>
@@ -101,8 +180,18 @@
 							<label for="mkchar4" aria-hidden="true">Stunts and Refresh</label>
 							<div>
 								<p>A <strong>stunt</strong> is a special trait that changes the way an approach works for your character. Generally, stunts give you a bonus (almost always +2) to a certain approach when used with a particular action under specific circumsntances. Choose one stunt to start, or you can wait and add a stunt during the game. Later, when your character advances, you can add more.</p>
-								<textarea placeholder="Stunts"></textarea>
-								<button class="primary" id="save-character">Save Character</button>
+								<div id="mkchar-stunts">
+									<table>
+										<tr v-for="stunt in stunts">
+											<td>
+												<input type="text" placeholder="Stunt Name" :value="stunt.name">
+												<textarea placeholder="Stunt Description" v-model="stunt.description"></textarea>
+											</td>
+										</tr>
+										<tr><td><button @click="newstunt">Add Stunt</button></td></tr>
+									</table>
+									<button class="primary" id="save-character">Save Character</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -118,7 +207,7 @@
 					</div>
 					<div class="tabs stacked hidden-sm">
 						<input type="checkbox" name="accordion" id="ref" aria-hidden="true">
-						<label for="ref" aria-hidden="true">Reference</label>
+						<label for="ref" aria-hidden="true"><i class="fa fa-book fa-md"></i> Reference</label>
 						<div>
 							<div class="tabs stacked">
 								<input type="checkbox" name="accordion" id="cheat1" aria-hidden="true">
@@ -210,37 +299,78 @@
 				</div>
 				<div class="col-sm-12 col-md-9 col-lg-6" id="content">
 					<h2>Discovered Aspects</h2>
-					<h2>Video</h2>
-					<div class="row" id="video">
-						<div v-for="player in sortedPlayers" class="card">
-							<div class="section">
-								<h3>{{ player.id != id ? player.name : "Me" }}<mark v-if="player.gm">GM</mark><span class="dot" :class="player.status"></span>
-</h3>
-								<small v-if="gm" class="player-id">{{ player.id }}</small>
-								<span class="close kick-player" v-if="gm" :data-id="player.id"></span>								<canvas class="videostream"></canvas>
-							</div>
-						</div>
+					<div v-if="aspects.length == 0">
+						<h4 style="text-align: center; opacity: 0.6">(no aspects discovered)</h4>
 					</div>
 					<h2>Actions</h2>
-					<button>New Scene</button>
-					<button>New Character</button>
-					<button>New Mook</button>
-					<div class="button-group">
-						<button>Create An Advantage</button>
-						<button>Overcome</button>
-						<button>Attack</button>
-						<button>Defend</button>
+					<div v-if="gm">
+						<button>New Scene</button>
+						<button>New Character</button>
+						<button>New Mook</button>
+					</div>
+					<div v-if="gm">
+						<button>New Challenge</button>
+						<button>New Contest</button>
+						<button>New Conflict</button>
+					</div>
+					<div class="row" id="take-action">
+						<div class="col-md-11 col-sm-12">
+							<div class="button-group" id="take-action-action">
+								<input type="radio" id="actions1" name="actions"><label class="button" for="actions1">Create An Advantage</label>
+								<input type="radio" id="actions2" name="actions"><label class="button" for="actions2">Overcome</label>
+								<input type="radio" id="actions3" name="actions"><label class="button" for="actions3">Attack</label>
+								<input type="radio" id="actions4" name="actions"><label class="button" for="actions4">Defend</label>
+							</div>
+							<div class="button-group" id="take-action-approach">
+								<input type="radio" id="actions-approaches1" name="actions-approaches"><label class="button" for="actions-approaches1">Careful</label>
+								<input type="radio" id="actions-approaches2" name="actions-approaches"><label class="button" for="actions-approaches2">Clever</label>
+								<input type="radio" id="actions-approaches3" name="actions-approaches"><label class="button" for="actions-approaches3">Flashy</label>
+								<input type="radio" id="actions-approaches4" name="actions-approaches"><label class="button" for="actions-approaches4">Forceful</label>
+								<input type="radio" id="actions-approaches5" name="actions-approaches"><label class="button" for="actions-approaches5">Quick</label>
+								<input type="radio" id="actions-approaches6" name="actions-approaches"><label class="button" for="actions-approaches6">Stealthy</label>
+							</div>
+						</div>
+						<div class="col-md-1 col-sm-12" id="take-action-submit">
+							<button class="primary"><i class="fa fa-arrow-right fa-md"></i></button>
+						</div>
 					</div>
 				</div>
-				<div class="col-sm-12 col-md-12 col-lg-3">
+				<div class="col-sm-12 col-md-12 col-lg-3" id="rightbar">
 					<div id="characters">
 						<div class="tabs stacked">
 							<input type="checkbox" checked name="accordion" id="char" aria-hidden="true">
 							<label for="char" aria-hidden="true">Characters</label>
 							<div>
 								<div class="card" v-for="character in sortedCharacters">
+									<h3>{{ character.name }}<span class="close" :data-id="character.id"></span></h3>
+									<p class="description">{{ character.description }}</p>
+									<h4>Aspects</h4>
+									<ul>
+										<li v-for="aspect, i in character.aspects">
+											<strong v-if="i == 0">High Concept: </strong>
+											<strong v-if="i == 1">Trouble: </strong>
+											{{ aspect }} <button>Invoke</button>
+										</li>
+									</ul>
+									<h4>Stunts</h4>
 								</div>
 								<label class="button primary" for="mkchar">Create Character</label>
+							</div>
+						</div>
+					</div>
+					<br>
+					<div id="players">
+						<div class="tabs stacked">
+							<input type="checkbox" checked name="accordion" id="plyr" aria-hidden="true">
+							<label for="plyr" aria-hidden="true">Players</label>
+							<div>
+								<div v-for="player in sortedPlayers" class="card">
+									<div class="section">
+										<h3><i class="fa fa-user fa-md"></i> {{ player.id != id ? player.name : "Me" }}<mark v-if="player.gm">GM</mark><span class="dot" :class="player.status"></span></h3>
+										<small v-if="gm" class="player-id">{{ player.id }}</small>
+										<span class="close kick-player" v-if="gm" :data-id="player.id"></span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -248,8 +378,8 @@
 			</div>
 		</div>
 		<center>
-			<button class="primary" id="sync-btn">Sync</button>
-			<button class="secondary" id="reset-btn">Reset</button>
+			<button class="primary" id="sync-btn"><i class="fa fa-refresh fa-md"></i><br>Sync</button>
+			<button class="secondary" id="reset-btn"><i class="fa fa-undo fa-md"></i><br>Reset</button>
 		</center>
 		<span class="toast" id="toast"></span>
 		<footer>

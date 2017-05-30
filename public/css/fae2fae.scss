@@ -2,6 +2,64 @@
 	height: auto;
 }
 
+.button-group {
+	input[type="radio"]:checked + label.button {
+		background-color: #162228;
+	}
+}
+
+#approaches-table {
+	.button-group {
+		margin: 0;
+		padding: 0;
+
+		.negative {
+			color: #ff4136;
+		}
+		.zero {
+			color: #2ecc40;
+		}
+	}
+}
+
+#take-action-submit {
+	button {
+		height: 80%;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		position: relative;
+		top: 0.75rem;
+	}
+}
+
+#characters {
+	.description {
+		font-style: italic;
+		font-size: 0.9rem;
+		padding: 0;
+	}
+	h3 {
+		font-size: 1.2rem;
+		margin-bottom: 0;
+	}
+	h4 {
+		font-variant: small-caps;
+		font-size: 1rem;
+		margin: 0;
+		padding: 0;
+	}
+	button {
+		padding: 0 10px;
+		font-size: 0.9rem;
+	}
+	.close {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+}
+
 .tabs {
 	button, .button {
 		&.primary {
@@ -21,7 +79,6 @@
 }
 
 .modal {
-
 	h3 {
 		text-align: center;
 	}
@@ -62,7 +119,6 @@
 		~ .card {
 			opacity: 0;
 			overflow: hidden;
-			transition: opacity 0.3s;
 		}
 		~ .overlay {
 			max-height: 0;
@@ -116,49 +172,50 @@ input {
 	opacity: 0;
 }
 
-#content {
-	#video {
-		.player-id {
-			font-family: monospace;
-			color: #aaa;
-			position: absolute;
-			right: 0.5rem;
-			top: 2rem;
-		}
+#sidebar, #rightbar {
+	padding: 1rem;
+}
 
-		.close {
-			position: absolute;
-			top: 0;
-			right: 0;
-		}
+#players {
+	.player-id {
+		font-family: monospace;
+		color: #aaa;
+		position: absolute;
+		right: 0.5rem;
+		top: 2rem;
+	}
 
-		mark {
-			background-color: #3d5977;
-			margin: 0 0.5rem;
-		}
+	.close {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
 
-		.dot {
-			display: inline-block;
-			width: 10px;
-			height: 10px;
-			margin-left: 5px;
-			border-radius: 50%;
+	mark {
+		background-color: #3d5977;
+		margin: 0 0.5rem;
+	}
 
-			&.online {
-				background-color: #2ecc40;
-			}
-			&.disconnected {
-				background-color: #ff851b;
-			}
-			&.offline {
-				background-color: #ff4136;
-			}
-		}
+	.dot {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		margin-left: 5px;
+		border-radius: 50%;
 
-		.videostream {
-			width: 100%;
-			background-color: black;
+		&.online {
+			background-color: #2ecc40;
 		}
+		&.disconnected {
+			background-color: #ff851b;
+		}
+		&.offline {
+			background-color: #ff4136;
+		}
+	}
+
+	i {
+		margin-right: 0.5rem;
 	}
 }
 

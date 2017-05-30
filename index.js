@@ -91,6 +91,16 @@ io.on("connection", function(socket){
 		socket.broadcast.emit("sync_characters", gamestate.characters);
 	});
 
+	socket.on("char_delete", function(data){
+		for(var i = 0; i < gamestate.characters.length; i++){
+			if(gamestate.characters[i].id = data.id){
+				gamestate.characters.splice(i, 1);
+				break;
+			}
+		}
+		socket.broadcast.emit("sync_characters", gamestate.characters);
+	});
+
 	
 	socket.on("disconnect", function(reason){
 		if(reason == "transport close"){

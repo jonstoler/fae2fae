@@ -1,6 +1,49 @@
 .tabs > [type="radio"]:checked + label + div, .tabs.stacked > [type="checkbox"]:checked + label + div {
   height: auto; }
 
+.button-group input[type="radio"]:checked + label.button {
+  background-color: #162228; }
+
+#approaches-table .button-group {
+  margin: 0;
+  padding: 0; }
+  #approaches-table .button-group .negative {
+    color: #ff4136; }
+  #approaches-table .button-group .zero {
+    color: #2ecc40; }
+
+#take-action-submit button {
+  height: 80%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  top: 0.75rem; }
+
+#characters .description {
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 0; }
+
+#characters h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0; }
+
+#characters h4 {
+  font-variant: small-caps;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0; }
+
+#characters button {
+  padding: 0 10px;
+  font-size: 0.9rem; }
+
+#characters .close {
+  position: absolute;
+  top: 0;
+  right: 0; }
+
 .tabs button.primary, .tabs .button.primary {
   position: relative;
   left: 100%;
@@ -45,8 +88,7 @@
 
 .modal input[name="modal"] ~ .card {
   opacity: 0;
-  overflow: hidden;
-  transition: opacity 0.3s; }
+  overflow: hidden; }
 
 .modal input[name="modal"] ~ .overlay {
   max-height: 0; }
@@ -81,38 +123,40 @@ input:not([type]).error, input[type="text"].error {
   transition: opacity 0.3s;
   opacity: 0; }
 
-#content #video .player-id {
+#sidebar, #rightbar {
+  padding: 1rem; }
+
+#players .player-id {
   font-family: monospace;
   color: #aaa;
   position: absolute;
   right: 0.5rem;
   top: 2rem; }
 
-#content #video .close {
+#players .close {
   position: absolute;
   top: 0;
   right: 0; }
 
-#content #video mark {
+#players mark {
   background-color: #3d5977;
   margin: 0 0.5rem; }
 
-#content #video .dot {
+#players .dot {
   display: inline-block;
   width: 10px;
   height: 10px;
   margin-left: 5px;
   border-radius: 50%; }
-  #content #video .dot.online {
+  #players .dot.online {
     background-color: #2ecc40; }
-  #content #video .dot.disconnected {
+  #players .dot.disconnected {
     background-color: #ff851b; }
-  #content #video .dot.offline {
+  #players .dot.offline {
     background-color: #ff4136; }
 
-#content #video .videostream {
-  width: 100%;
-  background-color: black; }
+#players i {
+  margin-right: 0.5rem; }
 
 #sidebar {
   border-right: 1px solid #595759; }
