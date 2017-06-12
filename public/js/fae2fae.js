@@ -46,6 +46,11 @@
 			sortedCharacters: function(){
 				return this.characters;
 			}
+		},
+		filters: {
+			ucfirst: function(str){
+				return str[0].toUpperCase() + str.substring(1);
+			}
 		}
 	});
 
@@ -221,10 +226,44 @@
 		}
 		character.stunts.push($("#mkchar-stunts").val());
 
-		$("#mkchar").prop("checked", false);
-		toast("Character saved.");
-		fae.characters.push(character);
-		socket.emit("char_new", character);
+		var missing = [];
+		if(character.name == ""){
+			missing.push("name");
+			$("#mkchar-id-name").addClass("error");
+		}
+		if(character.description == ""){
+			missing.push("description")
+			$("#mkchar-id-description").addClass("error");
+		}
+		var approachvalues = {'good': 3, 'fair': 2, 'average': 1, 'mediocre': 0, '': null}
+		var approaches = ['careful', 'clever', 'flashy', 'forceful', 'quick', 'sneaky'];
+		for(var i = 0; i < approaches.length; i++){
+			var choice = $("input[name=" + approaches[i] + "-rating]:checked").val();
+			if(choice != undefined){
+				character.approaches[approaches[i]] = approachvalues[choice];
+			} else {
+				missing.push("approaches");
+				break;
+			}
+		}
+
+		if(missing.length > 0){
+			var error = "Character " + missing[0];
+			for(var i = 1; i < missing.length - 1; i++){
+				error += ", " + missing[i];
+			}
+			if(missing.length > 1){
+				error += ", and " + missing[missing.length - 1];
+			}
+			error += " missing.";
+			toast(error);
+		} else {
+			$("#mkchar").prop("checked", false);
+			toast("Character saved.");
+			fae.characters.push(character);
+			console.log(character.approaches);
+			socket.emit("char_new", character);
+		}
 	});
 
 	$(document.body).on("keydown", function(e){

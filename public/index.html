@@ -184,6 +184,7 @@
 									<table>
 										<tr v-for="stunt in stunts">
 											<td>
+												<span class="close"></span>
 												<input type="text" placeholder="Stunt Name" :value="stunt.name">
 												<textarea placeholder="Stunt Description" v-model="stunt.description"></textarea>
 											</td>
@@ -344,6 +345,12 @@
 								<div class="card" v-for="character in sortedCharacters">
 									<h3>{{ character.name }}<span class="close" :data-id="character.id"></span></h3>
 									<p class="description">{{ character.description }}</p>
+									<h4>Approaches</h4>
+									<ul>
+										<span v-for="value, approach in character.approaches">
+											{{ approach | ucfirst }} {{ value }}
+										</span>
+									</ul>
 									<h4>Aspects</h4>
 									<ul>
 										<li v-for="aspect, i in character.aspects">
