@@ -1,173 +1,36 @@
-.tabs > [type="radio"]:checked + label + div, .tabs.stacked > [type="checkbox"]:checked + label + div {
-  height: auto; }
-
-.button-group input[type="radio"]:checked + label.button {
-  background-color: #162228; }
-
-#approaches-table .button-group {
-  margin: 0;
-  padding: 0; }
-  #approaches-table .button-group .negative {
-    color: #ff4136; }
-  #approaches-table .button-group .zero {
-    color: #2ecc40; }
-
-#take-action-submit button {
-  height: 80%;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  position: relative;
-  top: 0.75rem; }
-
-#characters .description {
-  font-style: italic;
-  font-size: 0.9rem;
-  padding: 0; }
-
-#characters h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0; }
-
-#characters h4 {
-  font-variant: small-caps;
-  font-size: 1rem;
-  margin: 0;
-  padding: 0; }
-
-#characters button {
-  padding: 0 10px;
-  font-size: 0.9rem; }
-
-#characters .close {
-  position: absolute;
-  top: 0;
-  right: 0; }
-
-.tabs button.primary, .tabs .button.primary {
-  position: relative;
-  left: 100%;
-  transform: translateX(-100%);
-  margin-left: -20px; }
-
-.mkchar input, .mkchar textarea {
-  box-sizing: border-box;
-  width: 100%; }
-
-.modal h3 {
-  text-align: center; }
-
-.modal .close {
-  position: absolute;
-  top: 0;
-  right: 5px; }
-
-.modal .card {
-  z-index: 1000;
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  background-color: #232e33;
-  max-width: 40rem;
-  max-height: 40rem;
-  overflow-y: scroll; }
-
-.modal .overlay {
-  position: fixed;
-  background-color: black;
-  opacity: 0;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000; }
-
-.modal .card, .modal .close, .modal .overlay {
+#gm-joined {
   display: none; }
 
-.modal input[name="modal"] ~ .card {
-  opacity: 0;
-  overflow: hidden; }
-
-.modal input[name="modal"] ~ .overlay {
-  max-height: 0; }
-
-.modal input[name="modal"]:checked ~ .card {
-  opacity: 1;
-  max-height: 70%;
-  overflow-y: scroll; }
-
-.modal input[name="modal"]:checked ~ .overlay {
-  opacity: 0.8;
-  max-height: 100%; }
-
-.modal input[name="modal"]:checked ~ .card, .modal input[name="modal"]:checked ~ .close, .modal input[name="modal"]:checked ~ .overlay {
-  display: block; }
-
-html, body {
-  height: 100%; }
-
-a {
-  text-decoration: none; }
-
-button[disabled] {
-  opacity: 0.5; }
-  button[disabled]:hover {
-    cursor: not-allowed; }
-
-input:not([type]).error, input[type="text"].error {
-  border: 1px solid #ff4136 !important; }
+#timer {
+  display: none; }
 
 #toast {
+  position: fixed;
+  bottom: 3rem;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px 40px;
+  border-radius: 5rem;
+  z-index: 1051;
   transition: opacity 0.3s;
-  opacity: 0; }
+  opacity: 0;
+  display: none; }
 
-#sidebar, #rightbar {
-  padding: 1rem; }
-
-#players .player-id {
-  font-family: monospace;
-  color: #aaa;
-  position: absolute;
-  right: 0.5rem;
-  top: 2rem; }
-
-#players .close {
-  position: absolute;
-  top: 0;
-  right: 0; }
-
-#players mark {
-  background-color: #3d5977;
-  margin: 0 0.5rem; }
-
-#players .dot {
-  display: inline-block;
+.dot {
   width: 10px;
   height: 10px;
-  margin-left: 5px;
+  display: inline-block;
   border-radius: 50%; }
-  #players .dot.online {
-    background-color: #2ecc40; }
-  #players .dot.disconnected {
-    background-color: #ff851b; }
-  #players .dot.offline {
-    background-color: #ff4136; }
 
-#players i {
-  margin-right: 0.5rem; }
+#play {
+  display: none; }
 
-#sidebar {
-  border-right: 1px solid #595759; }
+.btn-group.radio input[type="radio"]:checked + label {
+  color: #292b2c;
+  background-color: #e6e6e6;
+  background-image: none;
+  border-color: #adadad; }
 
-footer {
-  padding: 6px 10px 6px;
-  text-align: center; }
-  footer p {
-    font-size: 0.9em;
-    color: #969596; }
-  footer a {
-    font-size: 0.95em;
-    font-weight: bold;
-    color: #a9a8a9; }
+@media (min-width: 576px) {
+  #join .card {
+    max-width: 25rem; } }

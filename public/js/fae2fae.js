@@ -1,4 +1,20 @@
-(function(){
+// can debug in console now
+var socket, fae;
+
+$(document).ready(function(){
+	$("#player-name").focus();
+	$("#player-name").keyup(function(e){
+		// on return, join as player
+		if(e.keyCode == 13){
+			$("#join-as-player").click();
+		} else {
+		}
+	});
+	$("body").on("keyup", ".error-empty", function(){
+		if($(this).val() != ""){
+			$(this).parent(".form-group").removeClass("has-danger");
+		}
+	});
 
 	function generateID(){
 		var id = "";
@@ -10,55 +26,79 @@
 	}
 
 	var toastTimeout;
-	function toast(txt){
-		var toast = document.getElementById("toast");
+	function toast(txt, style){
+		style = style || "inverse";
+
 		clearTimeout(toastTimeout);
-		toast.innerText = txt;
-		toast.style.opacity = 1;
+		$("#toast").removeClass().addClass("bg-" + style);
+		if(style != "muted"){
+			$("#toast").addClass("text-white");
+		}
+		$("#toast").text(txt);
+		$("#toast").show();
+		$("#toast").css("opacity", 1);
 		toastTimeout = setTimeout(function(){
-			toast.style.opacity = 0;
+			$("#toast").css("opacity", 0);
+			toastTimeout = setTimeout(function(){
+				$("#toast").hide();
+			}, 300);
 		}, 3000);
 	}
 
-	var fae = new Vue({
+	$("#sync-btn").click(function(){ socket.emit("sync_all"); });
+	$("#reset-btn").click(function(){ socket.emit("reset"); });
+	$("#load-btn").click(function(){ socket.emit("load"); })
+
+	fae = new Vue({
 		el: "#play",
 		data: {
-			characters: [],
-			log: [],
-			aspects: [],
-			players: [],
-			gm: false,
+			players: {},
+			characters: {},
+			log: {},
 			id: generateID(),
+			gm: false,
 		},
-		computed: {
-			sortedPlayers: function(){
-				var sorted = [];
-				for(var i = 0; i < this.players.length; i++){
-					var p = this.players[i];
-					if(p.id == this.id){
-						sorted.unshift(p);
+		methods: {
+			rmchar: function(e){
+				var id = $(e.target).attr("data-id");
+				socket.emit("char_delete", this.characters[id]);
+			},
+			editchar: function(e){
+				var id = $(e.target).attr("data-id");
+				var character = fae.characters[id];
+				for(var i = 0; i < character.aspects.length; i++){
+					var name = character.aspects[i].name;
+					var desc = character.aspects[i].description;
+					if(i == 0){
+						$("#char-m-as-hc-n").val(name);
+						$("#char-m-as-hc-d").val(desc);
+					} else if(i == 0){
+						$("#char-m-as-tr-n").val(name);
+						$("#char-m-as-tr-d").val(desc);
 					} else {
-						sorted.push(p);
+						$("#char-m-as" + i + "-n").val(name);
+						$("#char-m-as" + i + "-d").val(desc);
 					}
 				}
-				return sorted;
+				$("#char-m-id-n").val(character.name);
+				$("#char-m-id-d").val(character.description);
+
+				charStunts.stunts = character.stunts;
+
+				$("#character-modal").modal("show");
 			},
-			sortedCharacters: function(){
-				return this.characters;
-			}
-		},
-		filters: {
-			ucfirst: function(str){
-				return str[0].toUpperCase() + str.substring(1);
-			}
 		}
 	});
-
 	var charApproaches = new Vue({
 		el: "#approaches-table",
 		data: {
 			total: { good: 1, fair: 2, average: 2, mediocre: 1 },
-			approaches: { careful: false, clever: false, flashy: false, forceful: false, quick: false, sneaky: false }
+			approaches: { careful: false, clever: false, flashy: false, forceful: false, quick: false, sneaky: false },
+		},
+		methods: {
+			reset: function(){
+				this.approaches = { careful: false, clever: false, flashy: false, forceful: false, quick: false, sneaky: false };
+			}
 		},
 		computed: {
 			remaining: function(){
@@ -78,92 +118,180 @@
 		}
 	});
 	var charStunts = new Vue({
-		el: "#mkchar-stunts",
+		el: "#stunts",
 		data: {
-			stunts: [
-				{ name: "", description: "" }
-			]
+			free: 3,
+			start: 3,
+			stunts: [],
+		},
+		computed: {
+			refresh: function(){
+				return Math.max(0, this.start - Math.max(0, this.stunts.length - this.free));
+			}
 		},
 		methods: {
+			reset: function(){
+				this.stunts = [];
+			},
 			newstunt: function(){
 				this.stunts.push({ name: "", description: "" });
+			},
+			rmstunt: function(e){
+				this.stunts.splice($(e).attr("data-id"), 1);
 			}
 		}
 	});
+	$("#character-modal-save").click(function(){
+		var character = {};
+		character.id = generateID();
+		character.aspects = [];
 
-	var socket = io("http://localhost:3000");
+		var charName = $("#char-m-id-n").val();
+		var charDesc = $("#char-m-id-d").val();
+		if(charName == "" && charDesc != ""){
+			toast("Please provide a name for your character.", "danger");
+			$("#char-m-id-n-form").addClass("has-danger");
+			return;
+		} else if(charDesc == "" && charName != ""){
+			toast("Please provide a description for your character.", "danger");
+			$("#char-m-id-d-form").addClass("has-danger");
+			return;
+		} else if(charName == "" && charDesc == ""){
+			toast("Please provide a name and description for your character.", "danger");
+			$("#char-m-id-n-form").addClass("has-danger");
+			$("#char-m-id-d-form").addClass("has-danger");
+			return;
+		}
+		character.name = charName;
+		character.description = charDesc;
+
+		var hcName = $("#char-m-as-hc-n").val();
+		var hcDesc = $("#char-m-as-hc-d").val();
+		if(hcName != "" && hcDesc != ""){
+			character.aspects.push({name: hcName, description: hcDesc});
+		}
+		var trName = $("#char-m-as-tr-n").val();
+		var trDesc = $("#char-m-as-tr-d").val();
+		if(trName != "" && trDesc != ""){
+			character.aspects.push({name: trName, description: trDesc});
+		}
+		for(var i = 3; i <= 5; i++){
+			var aName = $("#char-m-as" + i + "-n").val();
+			var aDesc = $("#char-m-as" + i + "-d").val();
+			if(aName != "" && aDesc != ""){
+				character.aspects.push({name: aName, description: aDesc});
+			}
+		}
+
+		character.approaches = {};
+		var approachvalues = {"good": 3, "fair": 2, "average": 1, "mediocre": 0};
+		var approaches = ["careful", "clever", "flashy", "forceful", "quick", "sneaky"];
+		for(var i = 0; i < approaches.length; i++){
+			var choice = charApproaches.approaches[approaches[i]];
+			if(choice){
+				character.approaches[approaches[i]] = approachvalues[choice];
+			} else {
+				toast("Please fill out your character's approaches.", "danger");
+				return;
+			}
+		}
+
+		character.stunts = [];
+		for(var stunt in charStunts.stunts){
+			if(stunt.name != "" && stunt.description != ""){
+				character.stunts.push({name: stunt.name, description: stunt.description});
+			}
+		}
+
+		$("#character-modal").modal("hide");
+		socket.emit("char_new", character);
+		$("#char-m-id-n").val("");
+		$("#char-m-id-d").val("");
+		$("#char-m-as-hc-n").val("");
+		$("#char-m-as-hc-d").val("");
+		$("#char-m-as-tr-n").val("");
+		$("#char-m-as-tr-d").val("");
+		for(var i = 3; i <= 5; i++){
+			$("#char-m-as" + i + "-n").val("");
+			$("#char-m-as" + i + "-d").val("");
+		}
+		charApproaches.reset();
+		charStunts.reset();
+	});
+
+	var gmCheck;
+	$("#join-as-player").click(function(){
+		var name = $("#player-name").val();
+		if(name == ""){
+			toast("Please enter a name.");
+			$("#player-name-form").addClass("has-danger");
+			$("#player-name").focus();
+		} else {
+			socket.emit("pc_join", {
+				name: name,
+				id: fae.id,
+			});
+			clearInterval(gmCheck);
+			$("#join").hide();
+			$("#play").show();
+			socket.emit("sync_all");
+		}
+	});
+	$("#join-as-gm").click(function(){
+		var name = $("#player-name").val();
+		if(name == ""){
+			toast("Please enter a name.", "danger");
+			$("#player-name-form").addClass("has-danger");
+			$("#player-name").focus();
+		} else {
+			socket.emit("gm_join", {
+				name: name,
+				id: fae.id,
+			});
+			clearInterval(gmCheck);
+			fae.gm = true;
+
+			$("#join").hide();
+			$("#play").show();
+			socket.emit("sync_all");
+		}
+	});
+
+	$("#players").on("click", ".close", function(e){
+		var id = $(this).attr("data-id");
+		socket.emit("pc_kick", {id: id});
+	});
+
+	socket = io("http://localhost:3000");
 	socket.on("connect", function(){
-		var gmCheck = setInterval(function(){
+		gmCheck = setInterval(function(){
 			socket.emit("gm_exists");
 		}, 1000);
 		socket.emit("gm_exists");
 
 		socket.on("gm_exists", function(data){
-			var search = $("#gm-search");
-			var searchtxt = $("#gm-search-txt");
-			var found = $("#gm-found");
-			var notfound = $("#gm-not-found");
 			if(data === true){
-				found.removeClass("hidden");
-				notfound.addClass("hidden");
-				search.addClass("hidden");
+				// there's a GM!
+				$("#join-as-gm").hide();
+				$("#gm-joined").show();
+				$("#join-as-gm").attr("hidden", true);
+				$("#join-as-gm").addClass("disabled");
 				socket.emit("gm_get");
 			} else {
-				notfound.removeClass("hidden");
-				search.removeClass("hidden");
-				found.addClass("hidden");
-				$("#gm-id").text("Someone");
-			}
-			searchtxt.addClass("hidden");
-		});
-
-		$("#gm-join").on("click", function(){
-			var name = $("#player-name").val();
-			if(name == ""){
-				toast("Please enter a name.");
-				$("#player-name").addClass("error");
-				$("#player-name").focus();
-			} else {
-				socket.emit("gm_join", {
-					name: $("#player-name").val(),
-					id: fae.id,
-				});
-				clearInterval(gmCheck);
-				fae.gm = true;
-
-				$("#join").addClass("hidden");
-				$("#play").removeClass("hidden");
-
-				socket.emit("sync_all");
+				$("#gm-joined").hide();
+				$("#join-as-gm").attr("hidden", false);
+				$("#join-as-gm").removeClass("disabled");
+				$("#join-as-gm").show();
 			}
 		});
-
-		$("#pc-join").on("click", function(){
-			var name = $("#player-name").val();
-			if(name == ""){
-				toast("Please enter a name.");
-				$("#player-name").addClass("error");
-				$("#player-name").focus();
-			} else {
-				socket.emit("pc_join", {
-					name: $("#player-name").val(),
-					id: fae.id,
-				});
-				clearInterval(gmCheck);
-				$("#join").addClass("hidden");
-				$("#play").removeClass("hidden");
-
-				socket.emit("sync_all");
-			}
-		});
-
 		socket.on("gm_get", function(data){
-			$("#gm-id").text(data.name);
+			$("#gm-joined strong").text(data.name);
 		});
 
 		socket.on("sync_all", function(data){
 			fae.players = data.players;
 			fae.characters = data.characters;
+			fae.log = data.log;
 		});
 		socket.on("sync_players", function(data){
 			fae.players = data;
@@ -173,105 +301,8 @@
 		});
 
 		socket.on("kick", function(data){
-			$('.modal input[type=checkbox]').each(function(){
-				$(this).prop("checked", false);
-			});
 			document.location.reload();
 		});
 	});
 
-	$("#sync-btn").on("click", function(){ socket.emit("sync_all"); });
-	$("#reset-btn").on("click", function(){ socket.emit("reset"); });
-
-	$("#players").on("click", ".close", function(e){
-		var id = $(this).attr("data-id");
-		socket.emit("pc_kick", {id: id});
-		for(var i = 0; i < fae.players.length; i++){
-			if(fae.players[i].id == id){
-				fae.players.splice(i, 1);
-				break;
-			}
-		}
-	});
-	$("#characters").on("click", ".close", function(e){
-		var id= $(this).attr("data-id");
-		socket.emit("char_delete", {id: id});
-		for(var i = 0; i < fae.characters.length; i++){
-			if(fae.characters[i].id == id){
-				fae.characters.splice(i, 1);
-				break;
-			}
-		}
-	});
-
-	$("#save-character").on("click", function(e){
-		var character = {
-			name: "",
-			description: "",
-			id: generateID(),
-			player: fae.id,
-			aspects: [],
-			approaches: {},
-			stunts: []
-		};
-		character.name = $("#mkchar-id-name").val();
-		character.description = $("#mkchar-id-description").val();
-		character.aspects.push($("#mkchar-aspect-high-concept").val());
-		character.aspects.push($("#mkchar-aspect-trouble").val());
-		for(var i = 3; i < 6; i++){
-			var aspect = $("#mkchar-aspect-" + i).val();
-			if(aspect){
-				character.aspects.push(aspect);
-			}
-		}
-		character.stunts.push($("#mkchar-stunts").val());
-
-		var missing = [];
-		if(character.name == ""){
-			missing.push("name");
-			$("#mkchar-id-name").addClass("error");
-		}
-		if(character.description == ""){
-			missing.push("description")
-			$("#mkchar-id-description").addClass("error");
-		}
-		var approachvalues = {'good': 3, 'fair': 2, 'average': 1, 'mediocre': 0, '': null}
-		var approaches = ['careful', 'clever', 'flashy', 'forceful', 'quick', 'sneaky'];
-		for(var i = 0; i < approaches.length; i++){
-			var choice = $("input[name=" + approaches[i] + "-rating]:checked").val();
-			if(choice != undefined){
-				character.approaches[approaches[i]] = approachvalues[choice];
-			} else {
-				missing.push("approaches");
-				break;
-			}
-		}
-
-		if(missing.length > 0){
-			var error = "Character " + missing[0];
-			for(var i = 1; i < missing.length - 1; i++){
-				error += ", " + missing[i];
-			}
-			if(missing.length > 1){
-				error += ", and " + missing[missing.length - 1];
-			}
-			error += " missing.";
-			toast(error);
-		} else {
-			$("#mkchar").prop("checked", false);
-			toast("Character saved.");
-			fae.characters.push(character);
-			console.log(character.approaches);
-			socket.emit("char_new", character);
-		}
-	});
-
-	$(document.body).on("keydown", function(e){
-		if(e.keyCode == 27){ // ESC
-			// close modals
-			$('.modal input[type=checkbox]').each(function(){
-				$(this).prop("checked", false);
-			});
-		}
-	});
-})();
+});

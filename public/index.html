@@ -1,10 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
-		<link rel="stylesheet" type="text/css" href="/css/mini-dark.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="/css/fae2fae.css" />
-		<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta lang="en">
 		<meta charset="utf-8">
@@ -13,386 +11,328 @@
 		<title>fae2fae</title>
 	</head>
 	<body>
-		<div id="join" class="container">
-			<center>
-				<h1>fae2fae</h1>
-				<div class="card">
-					<h3 style="text-align: center">Join the Game</h3>
-					<div class="section">
-						<input id="player-name" placeholder="Your Name">
-					</div>
-					<div class="section">
-						<center>
-							<div id="gm-search">
-								<div class="spinner-donut"></div>
-								<p id="gm-search-txt">Searching for GM...</p>
-							</div>
-							<div id="gm-found" class="hidden">
-								<p><strong id="gm-id">Somebody</strong> is your GM.</p>
-							</div>
-							<div id="gm-not-found" class="hidden">
-								<p>No GM found!</p>
-								<button id="gm-join">Join as GM</button>
-							</div>
-						</center>
-					</div>
-					<div class="section">
-						<center>
-							<button id="pc-join">Join as PC</button>
-						</center>
+		<nav class="navbar navbar-light navbar-toggleable bg-faded mb-4">
+			<h1 class="navbar-brand mb-0">fae2fae</h1>
+			<a class="mr-4 mt-2 navbar-text text-muted" style="position: absolute; right: 0; top: 0" data-toggle="modal" data-target="#modal-help" href="#modal-help">Rules Reference</a>
+			<ul class="navbar-nav mx-auto">
+				<li class="navbar-item"><a class="btn btn-primary text-white" href="#" id="sync-btn">Sync</a></li>
+				<li class="navbar-item ml-3 text-white"><a class="btn btn-danger" href="#" id="reset-btn">Reset</a></li>
+				<li class="navbar-item ml-3 text-white"><a class="btn btn-success" href="#" id="load-btn">Load</a></li>
+			</ul>
+		</nav>
+		<div id="toast" class="bg-inverse text-white">Just a toast message.</div>
+		<div id="join" class="container-fluid">
+			<div class="card mx-auto card-outline-secondary">
+				<h3 class="card-header">Join the Game</h3>
+				<div class="card-block">
+					<div id="player-name-form" class="form-group card-text">
+						<input type="text" id="player-name" class="form-control" placeholder="Your Name">
 					</div>
 				</div>
-			</center>
+				<div class="card-footer">
+					<div class="row">
+						<div class="col">
+							<a href="#" id="join-as-player" class="btn btn-primary card-link">Join as Player</a>
+						</div>
+						<div class="col text-right">
+							<a href="#" id="join-as-gm" class="btn btn-secondary card-link disabled" hidden>Join as GM</a>
+							<p id="gm-joined" class="my-2"><strong>Someone</strong> is your GM.</p>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-			<div class="modal">
-				<input type="checkbox" name="modal" id="mkchar">
-				<label for="mkchar" class="overlay"></label>
-				<div class="card mkchar">
-					<h3>Create A Character <label for="mkchar" class="close"></label></h3>
-					<div class="section">
-						<div class="tabs">
-							<input type="radio" name="mkchar" checked id="mkchar1" aria-hidden="true">
-							<label for="mkchar1" aria-hidden="true">Aspects</label>
-							<div>
-								<div class="tabs stacked">
-									<input type="checkbox" name="mkchar-aspect" id="mkchar-aspect1" aria-hidden="true">
-									<label for="mkchar-aspect1" aria-hidden="true">What are aspects?</label>
-									<div>
-										<p>An <strong>aspect</strong> is a word, phrase, or sentence that describes something centrally important to your character. It can be a motto your character lives by, a personality quirk, a description of a relationship you have with another character, an important possession or bit of equipment your character has, or any other part of your character that is vitally important.</p>
-										<p>Aspects allow you to change the story in ways that tie in with your character's tendencies, skills, or problems. You can also use them to establish facts about the setting, such as the presence of magic or the existence of a useful ally, dangerous enemy, or secret organization.</p>
+		<div id="play" class="container-fluid">
+			<div class="row">
+				<div class="col-8">
+					<h3>Players</h3>
+					<div class="row" id="players">
+						<div class="col-4" v-for="player in players">
+							<div class="card">
+								<canvas class="card-img-top bg-inverse"></canvas>
+								<div class="card-header">
+									<button type="button" class="close ml-2" v-if="gm" :data-id="player.id"><span aria-hidden="true">&times;</span></button>
+									<span class="dot mr-1 bg-success"></span>
+									<strong>{{ player.id == id ? "Me" : player.name }}<span v-if="player.gm" class="badge badge-info mt-1 float-right">GM</span></strong>
+									<small v-if="gm" style="font-family: monospace" class="pl-1">{{ player.id }}</small>
+								</div>
+							</div>
+						</div>
+					</div>
+					<h3 class="mt-3">Discovered Aspects</h3>
+					<p class="text-muted">No aspects discovered.</p>
+					<h3>Actions</h3>
+					<div class="btn-group-vertical">
+						<div class="btn-group" data-toggle="buttons">
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off"><img src="/img/create-advantage.png" class="text-center"><br>Create An Advantage</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off"><img src="/img/overcome.png" class="text-center"><br>Overcome</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off"><img src="/img/attack.png" class="text-center"><br>Attack</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off"><img src="/img/defend.png" class="text-center"><br>Defend</label>
+						</div>
+						<div class="btn-group" data-toggle="buttons">
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Careful</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Clever</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Flashy</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Forceful</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Quick</label>
+							<label class="btn btn-secondary mb-0"><input type="radio" autocomplete="off">Sneaky</label>
+						</div>
+						<button type="button" class="btn btn-primary">Go!</button>
+					</div>
+				</div>
+				<div class="col-4">
+					<h3>Log</h3>
+					<p v-if="Object.keys(log).length == 0" class="text-muted">Nothing has happened yet.</p>
+					<h3>Characters</h3>
+					<p v-if="Object.keys(characters).length == 0" class="text-muted">No characters have been created.</p>
+					<div v-for="character in characters" class="card mb-3">
+						<div class="card-header">
+							<button type="button" class="close" :data-id="character.id" @click="rmchar"><span class="close" aria-hidden="true">&times;</span></button>
+							<button type="button" class="btn btn-secondary py-0 mr-3 float-right" :data-id="character.id" @click="editchar"><small>Edit Character</small></button>
+							<strong>{{ character.name }}</strong><br>
+							<small class="text-muted">{{ character.description }}</small>
+						</div>
+						<div class="card-block">
+							<h5>Aspects</h5>
+							<div v-for="aspect in character.aspects" class="row">
+								<div class="col-9">
+									<strong>{{ aspect.name }}:</strong> {{ aspect.description }}
+								</div>
+								<div class="col-3">
+									<button type="button" class="btn btn-secondary py-1"><small>Invoke</small></button>
+								</div>
+							</div>
+						</div>
+						<div class="card-block">
+							<h5>Stunts</h5>
+							<div v-for="stunt in character.stunts">
+								<strong>{{ stunt.name }}:</strong> {{ stunt.description }}
+							</div>
+						</div>
+					</div>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#character-modal">Create Character</button>
+				</div>
+			</div>
+		</div>
+		<nav class="navbar fixed-bottom navbar-light bg-faded text-center">
+			<p><small>fae2fae is designed and developed by <a href="https://jonstoler.me">Jonathan Stoler</a>. fae2fae uses <a href="http://v4-alpha.getbootstrap.com">Bootstrap</a> and <a href="https://socket.io">socket.io</a>. Fate Accelerated is licensed from <a href="http://evilhat.com">Evil Hat Productions</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</small></p>
+		</nav>
+		<div class="modal fade" id="character-modal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" style="max-width: 600px" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">New Character</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span class="close" aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+						<ul class="nav nav-tabs" role="tablist">
+							<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#character-modal-aspects">Aspects</a></li>
+							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#character-modal-id">Identity</a></li>
+							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#character-modal-approaches">Approaches</a></li>
+							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#character-modal-stunts">Stunts</a></li>
+						</ul>
+						<div class="my-4"></div>
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="character-modal-aspects">
+								<div class="form-group">
+									<legend>High Concept</legend>
+									<input type="text" id="char-m-as-hc-n" class="form-control" placeholder="High Concept Name" aria-describedby="character-modal-aspects-hc-n-help">
+									<small id="character-modal-aspects-hc-n-help" class="form-text text-muted">A single phrase or sentence that sums up your character, saying who you are, what you do, what your "deal" is.</small>
+									<br>
+									<textarea class="form-control" id="char-m-as-hc-d" rows="3" placeholder="High Concept Description"></textarea>
+								</div>
+								<div class="form-group">
+									<legend>Trouble</legend>
+									<input type="text" id="char-m-as-tr-n" class="form-control" placeholder="Trouble Name" aria-describedby="character-modal-aspects-tr-n-help">
+									<small id="character-modal-aspects-tr-n-help" class="form-text text-muted">The thing that always gets you into trouble.</small>
+									<br>
+									<textarea class="form-control" id="char-m-as-tr-d" rows="3" placeholder="Trouble Description"></textarea>
+								</div>
+								<div class="form-group">
+									<legend>Aspect 3</legend>
+									<input type="text" id="char-m-as3-n" class="form-control" placeholder="Aspect 3 Name" aria-describedby="character-modal-aspects-a3-n-help">
+									<small id="character-modal-aspects-a3-n-help" class="form-text text-muted">Something really important or interesting about your character.</small>
+									<br>
+									<textarea class="form-control" id="char-m-as3-d" rows="3" placeholder="Aspect 3 Description"></textarea>
+								</div>
+								<div class="form-group">
+									<legend>Additional Aspects</legend>
+									<input type="text" id="char-m-as4-n" class="form-control" placeholder="Aspect 4 Name">
+									<textarea class="form-control" id="char-m-as4-d" rows="3" placeholder="Aspect 4 Description"></textarea>
+								</div>
+								<div class="form-group">
+									<input type="text" id="char-m-as5-n" class="form-control" placeholder="Aspect 5 Name">
+									<textarea class="form-control" id="char-m-as5-d" rows="3" placeholder="Aspect 5 Description"></textarea>
+								</div>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="character-modal-id">
+								<div class="form-group">
+									<legend>Name and Appearance</legend>
+									<div class="form-group mb-0" id="char-m-id-n-form">
+										<input type="text" id="char-m-id-n" class="form-control error-empty" placeholder="Character Name">
+									</div>
+									<div class="form-group" id="char-m-id-d-form">
+										<textarea class="form-control error-empty" id="char-m-id-d" rows="3" placeholder="Character Description"></textarea>
 									</div>
 								</div>
-								<hr>
-								<p>First, decide on your character's <strong>high concept</strong>. This is a single phrase or sentence that sums up your character, saying who you are, what you do, what your "deal" is. When you think about your high concept, try to think of two things: how this aspect could help you, and how it might make things harder for you. Good high concept aspects do both.</p>
-								<input id="mkchar-aspect-high-concept-name" placeholder="High Concept Name">
-								<textarea id="mkchar-aspect-high-concept-description" placeholder="High Concept Description"></textarea>
-								<p>Next, decide on the thing that always gets you into <strong>trouble</strong>. It could be a personal weakness, or a recurring enemy, or an important obligation&mdash;anything that makes your life complicated.</p>
-								<input id="mkchar-aspect-trouble" placeholder="Trouble Name">
-								<textarea id="mkchar-aspect-trouble-description" placeholder="Trouble Description"></textarea>
-								<p>Now compose another aspect. Think of something really important or interesting about your character. Are they the strongest person in their hometown? Do they carry a mighty sword known through history? Do they talk to much? Are they filthy rich?</p>
-								<input id="mkchar-aspect-3-name" placeholder="Aspect 3 Name"><br>
-								<textarea id="mkchar-aspect-3-description" placeholder="Aspect 3 Description"></textarea>
-								<h5>Optional: One or Two Additional Aspects</h5>
-								<p>If you wish, you may create one or two more aspects, These aspects might describe your character's relationship with other player characters or with an NPC. Or, like the third aspect you composed above, it might describe someething especially interesting about your character.</p>
-								<p>If you prefer, you can leave one or both of these aspects blank right now and fill them in later, after the game has started.</p>
-								<input id="mkchar-aspect-4-name" placeholder="Aspect 4 Name"><br>
-								<textarea id="mkchar-aspect-4-description" placeholder="Aspect 4 Description"></textarea>
-								<br>
-								<input id="mkchar-aspect-5-name" placeholder="Aspect 5 Name"><br>
-								<textarea id="mkchar-aspect-5-description" placeholder="Aspect 5 Description"></textarea>
-								<label class="primary button" for="mkchar2">Next</label>
 							</div>
-							<input type="radio" name="mkchar" id="mkchar2" aria-hidden="true">
-							<label for="mkchar2" aria-hidden="true">Name and Appearance</label>
-							<div>
-								<p>Describe your character's appearance and give them a name.</p>
-								<input id="mkchar-id-name" placeholder="Character Name"><br>
-								<textarea id="mkchar-id-description" placeholder="Character Description"></textarea>
-								<br>
-								<label class="primary button" for="mkchar3">Next</label>
-							</div>
-							<input type="radio" name="mkchar" id="mkchar3" aria-hidden="true">
-							<label for="mkchar3" aria-hidden="true">Approaches</label>
-							<div>
-								<p>Approaches are descriptions of <em>how</em> you accomplish tasks. Each approach is rated with a bonus. Choose one at Good (+3), two at Fair (+2), two at Average (+1), and one at Mediocre (+0). You can improve these later.</p>
-								<table id="approaches-table">
-									<tr>
-										<th>Remaining</th>
-										<th>
-											<div class="button-group">
-												<span class="button" :class="{ negative: remaining.good < 0, zero: remaining.good == 0 }">{{ remaining.good }} Good <br>(+3)</span>
-												<span class="button" :class="{ negative: remaining.fair < 0, zero: remaining.fair == 0 }">{{ remaining.fair }} Fair<br>(+2)</span>
-												<span class="button" :class="{ negative: remaining.average < 0, zero: remaining.average == 0 }">{{ remaining.average }} Average<br>(+1)</span>
-												<span class="button" :class="{ negative: remaining.mediocre < 0, zero: remaining.mediocre == 0 }">{{ remaining.mediocre }} Mediocre<br>(+0)</span>
-											</div>
-										</th>
-									</tr>
-									<tr>
-										<td>Careful</td>
-										<td>
-											<div class="button-group" id="careful-rating">
-												<input type="radio" value="good" id="careful-rating1" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating1">Good</label>
-												<input type="radio" value="fair" id="careful-rating1" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating2">Fair</label>
-												<input type="radio" value="average" id="careful-rating3" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating3">Average</label>
-												<input type="radio" value="mediocre" id="careful-rating4" name="careful-rating" v-model="approaches.careful"><label class="button" for="careful-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>Clever</td>
-										<td>
-											<div class="button-group" id="clever-rating">
-												<input type="radio" value="good" id="clever-rating1" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating1">Good</label>
-												<input type="radio" value="fair" id="clever-rating2" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating2">Fair</label>
-												<input type="radio" value="average" id="clever-rating3" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating3">Average</label>
-												<input type="radio" value="mediocre" id="clever-rating4" name="clever-rating" v-model="approaches.clever"><label class="button" for="clever-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>Flashy</td>
-										<td>
-											<div class="button-group" id="flashy-rating">
-												<input type="radio" value="good" id="flashy-rating1" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating1">Good</label>
-												<input type="radio" value="fair" id="flashy-rating2" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating2">Fair</label>
-												<input type="radio" value="average" id="flashy-rating3" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating3">Average</label>
-												<input type="radio" value="mediocre" id="flashy-rating4" name="flashy-rating" v-model="approaches.flashy"><label class="button" for="flashy-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>Forceful</td>
-										<td>
-											<div class="button-group" id="forceful-rating">
-												<input type="radio" value="good" id="forceful-rating1" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating1">Good</label>
-												<input type="radio" value="fair" id="forceful-rating2" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating2">Fair</label>
-												<input type="radio" value="average" id="forceful-rating3" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating3">Average</label>
-												<input type="radio" value="mediocre" id="forceful-rating4" name="forceful-rating" v-model="approaches.forceful"><label class="button" for="forceful-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>Quick</td>
-										<td>
-											<div class="button-group" id="quick-rating">
-												<input type="radio" value="good" id="quick-rating1" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating1">Good</label>
-												<input type="radio" value="fair" id="quick-rating2" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating2">Fair</label>
-												<input type="radio" value="average" id="quick-rating3" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating3">Average</label>
-												<input type="radio" value="mediocre" id="quick-rating4" name="quick-rating" v-model="approaches.quick"><label class="button" for="quick-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>Sneaky</td>
-										<td>
-											<div class="button-group" id="sneaky-rating">
-												<input type="radio" value="good" id="sneaky-rating1" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating1">Good</label>
-												<input type="radio" value="fair" id="sneaky-rating2" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating2">Fair</label>
-												<input type="radio" value="average" id="sneaky-rating3" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating3">Average</label>
-												<input type="radio" value="mediocre" id="sneaky-rating4" name="sneaky-rating" v-model="approaches.sneaky"><label class="button" for="sneaky-rating4">Mediocre</label>
-											</div>
-										</td>
-									</tr>
-								</table>
-								<label class="primary button" for="mkchar4">Next</label>
-							</div>
-							<input type="radio" name="mkchar" checked id="mkchar4" aria-hidden="true">
-							<label for="mkchar4" aria-hidden="true">Stunts and Refresh</label>
-							<div>
-								<p>A <strong>stunt</strong> is a special trait that changes the way an approach works for your character. Generally, stunts give you a bonus (almost always +2) to a certain approach when used with a particular action under specific circumsntances. Choose one stunt to start, or you can wait and add a stunt during the game. Later, when your character advances, you can add more.</p>
-								<div id="mkchar-stunts">
-									<table>
-										<tr v-for="stunt in stunts">
-											<td>
-												<span class="close"></span>
-												<input type="text" placeholder="Stunt Name" :value="stunt.name">
-												<textarea placeholder="Stunt Description" v-model="stunt.description"></textarea>
+							<div role="tabpanel" class="tab-pane" id="character-modal-approaches">
+								<table class="table table-striped" id="approaches-table">
+									<thead>
+										<tr class="thead-inverse">
+											<th></th>
+											<th :class="{ 'text-success': remaining.good == 0, 'text-danger': remaining.good < 0 }">{{ remaining.good }} Good (+3)</th>
+											<th :class="{ 'text-success': remaining.fair == 0, 'text-danger': remaining.fair < 0 }">{{ remaining.fair }} Fair (+2)</th>
+											<th :class="{ 'text-success': remaining.average == 0, 'text-danger': remaining.average < 0 }">{{ remaining.average }} Average (+1)</th>
+											<th :class="{ 'text-success': remaining.mediocre == 0, 'text-danger': remaining.mediocre < 0 }">{{ remaining.mediocre}} Mediocre (+0)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th>Careful</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="careful" id="careful1" autocomplete="off" v-model="approaches.careful"><label class="btn btn-secondary" for="careful1">Good</label>
+													<input type="radio" value="fair" hidden name="careful" id="careful2" autocomplete="off" v-model="approaches.careful"><label class="btn btn-secondary" for="careful2">Fair</label>
+													<input type="radio" value="average" hidden name="careful" id="careful3" autocomplete="off" v-model="approaches.careful"><label class="btn btn-secondary" for="careful3">Average</label>
+													<input type="radio" value="mediocre" hidden name="careful" id="careful4" autocomplete="off" v-model="approaches.careful"><label class="btn btn-secondary" for="careful4">Mediocre</label>
+												</div>
 											</td>
 										</tr>
-										<tr><td><button @click="newstunt">Add Stunt</button></td></tr>
-									</table>
-									<button class="primary" id="save-character">Save Character</button>
+										<tr>
+											<th>Clever</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="clever" id="clever1" autocomplete="off" v-model="approaches.clever"><label class="btn btn-secondary" for="clever1">Good</label>
+													<input type="radio" value="fair" hidden name="clever" id="clever2" autocomplete="off" v-model="approaches.clever"><label class="btn btn-secondary" for="clever2">Fair</label>
+													<input type="radio" value="average" hidden name="clever" id="clever3" autocomplete="off" v-model="approaches.clever"><label class="btn btn-secondary" for="clever3">Average</label>
+													<input type="radio" value="mediocre" hidden name="clever" id="clever4" autocomplete="off" v-model="approaches.clever"><label class="btn btn-secondary" for="clever4">Mediocre</label>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>Flashy</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="flashy" id="flashy1" autocomplete="off" v-model="approaches.flashy"><label class="btn btn-secondary" for="flashy1">Good</label>
+													<input type="radio" value="fair" hidden name="flashy" id="flashy2" autocomplete="off" v-model="approaches.flashy"><label class="btn btn-secondary" for="flashy2">Fair</label>
+													<input type="radio" value="average" hidden name="flashy" id="flashy3" autocomplete="off" v-model="approaches.flashy"><label class="btn btn-secondary" for="flashy3">Average</label>
+													<input type="radio" value="mediocre" hidden name="flashy" id="flashy4" autocomplete="off" v-model="approaches.flashy"><label class="btn btn-secondary" for="flashy4">Mediocre</label>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>Forceful</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="forceful" id="forceful1" autocomplete="off" v-model="approaches.forceful"><label class="btn btn-secondary" for="forceful1">Good</label>
+													<input type="radio" value="fair" hidden name="forceful" id="forceful2" autocomplete="off" v-model="approaches.forceful"><label class="btn btn-secondary" for="forceful2">Fair</label>
+													<input type="radio" value="average" hidden name="forceful" id="forceful3" autocomplete="off" v-model="approaches.forceful"><label class="btn btn-secondary" for="forceful3">Average</label>
+													<input type="radio" value="mediocre" hidden name="forceful" id="forceful4" autocomplete="off" v-model="approaches.forceful"><label class="btn btn-secondary" for="forceful4">Mediocre</label>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>Quick</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="quick" id="quick1" autocomplete="off" v-model="approaches.quick"><label class="btn btn-secondary" for="quick1">Good</label>
+													<input type="radio" value="fair" hidden name="quick" id="quick2" autocomplete="off" v-model="approaches.quick"><label class="btn btn-secondary" for="quick2">Fair</label>
+													<input type="radio" value="average" hidden name="quick" id="quick3" autocomplete="off" v-model="approaches.quick"><label class="btn btn-secondary" for="quick3">Average</label>
+													<input type="radio" value="mediocre" hidden name="quick" id="quick4" autocomplete="off" v-model="approaches.quick"><label class="btn btn-secondary" for="quick4">Mediocre</label>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>Sneaky</th>
+											<td colspan="4">
+												<div class="btn-group radio">
+													<input type="radio" value="good" hidden name="sneaky" id="sneaky1" autocomplete="off" v-model="approaches.sneaky"><label class="btn btn-secondary" for="sneaky1">Good</label>
+													<input type="radio" value="fair" hidden name="sneaky" id="sneaky2" autocomplete="off" v-model="approaches.sneaky"><label class="btn btn-secondary" for="sneaky2">Fair</label>
+													<input type="radio" value="average" hidden name="sneaky" id="sneaky3" autocomplete="off" v-model="approaches.sneaky"><label class="btn btn-secondary" for="sneaky3">Average</label>
+													<input type="radio" value="mediocre" hidden name="sneaky" id="sneaky4" autocomplete="off" v-model="approaches.sneaky"><label class="btn btn-secondary" for="sneaky4">Mediocre</label>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="character-modal-stunts">
+								<div id="stunts">
+									<div class="jumbotron jumbotron-fluid py-2">
+										<div class="container text-center">
+											<h1 class="display-4 mb-0 pb-0">{{ refresh }}</h1>
+											<p class="lead mt-0 pt-0">Refresh</p>
+										</div>
+									</div>
+									<div class="container">
+										<div class="form-container my-2" v-for="stunt, i in stunts">
+											<div class="input-group">
+												<input type="text" class="form-control" placeholder="Stunt Name" :value="stunt.name">
+												<span class="input-group-btn">
+													<button type="button" class="btn btn-danger" @click="rmstunt" :data-id="i">Remove Stunt</button>
+												</span>
+											</div>
+											<textarea class="form-control" rows="3" placeholder="Stunt Description" v-model="stunt.description"></textarea>
+										</div>
+									</div>
+									<button type="button" class="btn btn-primary" @click="newstunt" :disabled="refresh < 1">Add Stunt</button>
 								</div>
 							</div>
 						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="character-modal-save">Create Character</button>
 					</div>
 				</div>
 			</div>
-		<div class="hidden container" id="play">
-			<div class="row">
-				<div class="col-sm-12 col-md-3" id="sidebar">
-					<div id="log">
-						<div v-for="entry in log">
-							<p>{{ entry.text }}</p>
-						</div>
+		</div>
+		<div class="modal fade" id="modal-help">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Fate Accelerated Quick Reference</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
-					<div class="tabs stacked hidden-sm">
-						<input type="checkbox" name="accordion" id="ref" aria-hidden="true">
-						<label for="ref" aria-hidden="true"><i class="fa fa-book fa-md"></i> Reference</label>
-						<div>
-							<div class="tabs stacked">
-								<input type="checkbox" name="accordion" id="cheat1" aria-hidden="true">
-								<label for="cheat1" aria-hidden="true">The Ladder</label>
-								<div>
-									<h3>The Ladder</h3>
-									<table class="striped">
-										<tbody>
-											<tr><td>+8</td><td>Legendary</td></tr>
-											<tr><td>+7</td><td>Epic</td></tr>
-											<tr><td>+6</td><td>Fantastic</td></tr>
-											<tr><td>+5</td><td>Superb</td></tr>
-											<tr><td>+4</td><td>Great</td></tr>
-											<tr><td>+3</td><td>Good</td></tr>
-											<tr><td>+2</td><td>Fair</td></tr>
-											<tr><td>+1</td><td>Average</td></tr>
-											<tr><td>0</td><td>Mediocre</td></tr>
-											<tr><td>-1</td><td>Poor</td></tr>
-											<tr><td>-2</td><td>Terrible</td></tr>
-										</tbody>
-									</table>
-								</div>
-								<input type="checkbox" name="accordion" id="cheat2" aria-hidden="true">
-								<label for="cheat2" aria-hidden="true">Outcomes</label>
-								<div>
-									<h3>Outcomes</h3>
-									<p>Your result, versus your target's:</p>
-									<ul>
-										<li><strong>Lower:</strong> Fail.</li>
-										<li><strong>Equal:</strong> Tie.</li>
-										<li><strong>Higher by 1 or 2:</strong> Succeed.</li>
-										<li><strong>Highber by 3 or more:</strong> Succed with Style.</li>
-									</ul>
-								</div>
-								<input type="checkbox" name="accordion" id="cheat3" aria-hidden="true">
-								<label for="cheat3" aria-hidden="true">Create an Advantage</label>
-								<div>
-									<h3>Creating or discovering aspects:</h3>
-									<ul>
-										<li><strong>Fail:</strong> Don't create or discover, or you do but your opponent (not you) gets a free invocation.</li>
-										<li><strong>Tie:</strong> Get a boost if creating new, or treat as success if looking for existing.</li>
-										<li><strong>Succeed:</strong> Create or discover the aspect, get a free invocation on it.</li>
-										<li><strong>Succeed with Style:</strong> Create or discover the aspect, get two free invocations.</li>
-									</ul>
-									<h3>On an aspect you already know about:</h3>
-									<ul>
-										<li><strong>Fail:</strong> No additional benefit.</li>
-										<li><strong>Tie:</strong> Generate one free invocation on the aspect.</li>
-										<li><strong>Succeed:</strong> Generate one free invocation on the aspect.</li>
-										<li><strong>Succeed with Style:</strong> Generate two free invocations on the aspect.</li>
-									</ul>
-								</div>
-								<input type="checkbox" name="accordion" id="cheat4" aria-hidden="true">
-								<label for="cheat4" aria-hidden="true">Overcome</label>
-								<div>
-									<h3>Overcome</h3>
-									<ul>
-										<li><strong>Fail:</strong> Fail, or succeed at a serious cost.</li>
-										<li><strong>Tie:</strong> Succeed at minor cost.</li>
-										<li><strong>Succeed:</strong> You accomplish your goal.</li>
-										<li><strong>Succeed with Style:</strong> You accomplish your goal and generate a boost.</li>
-									</ul>
-								</div>
-								<input type="checkbox" name="accordion" id="cheat5" aria-hidden="true">
-								<label for="cheat5" aria-hidden="true">Attack</label>
-								<div>
-									<h3>Attack</h3>
-									<ul>
-										<li><strong>Fail:</strong> No effect.</li>
-										<li><strong>Tie:</strong> Attack doesn't harm the target, but you gain a boost.</li>
-										<li><strong>Succeed:</strong> Attack hits and causes damage.</li>
-										<li><strong>Succeed with Style:</strong> Attack hits and causes damage. May reduce damage by one to generate a boost.</li>
-									</ul>
-								</div>
-								<input type="checkbox" name="accordion" id="cheat6" aria-hidden="true">
-								<label for="cheat6" aria-hidden="true">Defend</label>
-								<div>
-									<h3>Defend</h3>
-									<ul>
-										<li><strong>Fail:</strong> You suffer the consequences of your opponent's success.</li>
-										<li><strong>Tie:</strong> Lookat your opponent's action to see what happens.</li>
-										<li><strong>Succeed:</strong> Your opponent doesn't get what they want.</li>
-										<li><strong>Succeed with Style:</strong> Your opponent doesn't get what they want, and you get a boost.</li>
-									</ul>
-								</div>
+					<div class="modal-body">
+						<ul class="nav nav-pills nav-fill" role="tablist">
+							<li class="nav-item"><a class="nav-link active" data-toggle="tab" role="tab" href="#cheat-ladder">The Ladder</a></li>
+							<li class="nav-item"><a class="nav-link" data-toggle="tab" role="tab" href="#cheat-outcomes">Outcomes</a></li>
+						</ul>
+						<div class="my-4"></div>
+						<div class="tab-content">
+							<div class="tab-pane active" id="cheat-ladder" role="tabpanel">
+								<table class="table table-striped">
+									<thead class="thead-inverse">
+										<th colspan="2">The Ladder</th>
+									</thead>
+									<tbody>
+										<tr><td class="text-center">+8</td><td>Legendary</td></tr>
+										<tr><td class="text-center">+7</td><td>Epic</td></tr>
+										<tr><td class="text-center">+6</td><td>Fantastic</td></tr>
+										<tr><td class="text-center">+5</td><td>Superb</td></tr>
+										<tr><td class="text-center">+4</td><td>Great</td></tr>
+										<tr><td class="text-center">+3</td><td>Good</td></tr>
+										<tr><td class="text-center">+2</td><td>Fair</td></tr>
+										<tr><td class="text-center">+1</td><td>Average</td></tr>
+										<tr><td class="text-center">0</td><td>Mediocre</td></tr>
+										<tr><td class="text-center">-1</td><td>Poor</td></tr>
+										<tr><td class="text-center">-2</td><td>Terrible</td></tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="tab-pane active" id="cheat-outcomes" role="tabpanel">
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="col-sm-12 col-md-9 col-lg-6" id="content">
-					<h2>Discovered Aspects</h2>
-					<div v-if="aspects.length == 0">
-						<h4 style="text-align: center; opacity: 0.6">(no aspects discovered)</h4>
-					</div>
-					<h2>Actions</h2>
-					<div v-if="gm">
-						<button>New Scene</button>
-						<button>New Character</button>
-						<button>New Mook</button>
-					</div>
-					<div v-if="gm">
-						<button>New Challenge</button>
-						<button>New Contest</button>
-						<button>New Conflict</button>
-					</div>
-					<div class="row" id="take-action">
-						<div class="col-md-11 col-sm-12">
-							<div class="button-group" id="take-action-action">
-								<input type="radio" id="actions1" name="actions"><label class="button" for="actions1">Create An Advantage</label>
-								<input type="radio" id="actions2" name="actions"><label class="button" for="actions2">Overcome</label>
-								<input type="radio" id="actions3" name="actions"><label class="button" for="actions3">Attack</label>
-								<input type="radio" id="actions4" name="actions"><label class="button" for="actions4">Defend</label>
-							</div>
-							<div class="button-group" id="take-action-approach">
-								<input type="radio" id="actions-approaches1" name="actions-approaches"><label class="button" for="actions-approaches1">Careful</label>
-								<input type="radio" id="actions-approaches2" name="actions-approaches"><label class="button" for="actions-approaches2">Clever</label>
-								<input type="radio" id="actions-approaches3" name="actions-approaches"><label class="button" for="actions-approaches3">Flashy</label>
-								<input type="radio" id="actions-approaches4" name="actions-approaches"><label class="button" for="actions-approaches4">Forceful</label>
-								<input type="radio" id="actions-approaches5" name="actions-approaches"><label class="button" for="actions-approaches5">Quick</label>
-								<input type="radio" id="actions-approaches6" name="actions-approaches"><label class="button" for="actions-approaches6">Stealthy</label>
-							</div>
-						</div>
-						<div class="col-md-1 col-sm-12" id="take-action-submit">
-							<button class="primary"><i class="fa fa-arrow-right fa-md"></i></button>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-12 col-md-12 col-lg-3" id="rightbar">
-					<div id="characters">
-						<div class="tabs stacked">
-							<input type="checkbox" checked name="accordion" id="char" aria-hidden="true">
-							<label for="char" aria-hidden="true">Characters</label>
-							<div>
-								<div class="card" v-for="character in sortedCharacters">
-									<h3>{{ character.name }}<span class="close" :data-id="character.id"></span></h3>
-									<p class="description">{{ character.description }}</p>
-									<h4>Approaches</h4>
-									<ul>
-										<span v-for="value, approach in character.approaches">
-											{{ approach | ucfirst }} {{ value }}
-										</span>
-									</ul>
-									<h4>Aspects</h4>
-									<ul>
-										<li v-for="aspect, i in character.aspects">
-											<strong v-if="i == 0">High Concept: </strong>
-											<strong v-if="i == 1">Trouble: </strong>
-											{{ aspect }} <button>Invoke</button>
-										</li>
-									</ul>
-									<h4>Stunts</h4>
-								</div>
-								<label class="button primary" for="mkchar">Create Character</label>
-							</div>
-						</div>
-					</div>
-					<br>
-					<div id="players">
-						<div class="tabs stacked">
-							<input type="checkbox" checked name="accordion" id="plyr" aria-hidden="true">
-							<label for="plyr" aria-hidden="true">Players</label>
-							<div>
-								<div v-for="player in sortedPlayers" class="card">
-									<div class="section">
-										<h3><i class="fa fa-user fa-md"></i> {{ player.id != id ? player.name : "Me" }}<mark v-if="player.gm">GM</mark><span class="dot" :class="player.status"></span></h3>
-										<small v-if="gm" class="player-id">{{ player.id }}</small>
-										<span class="close kick-player" v-if="gm" :data-id="player.id"></span>
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<center>
-			<button class="primary" id="sync-btn"><i class="fa fa-refresh fa-md"></i><br>Sync</button>
-			<button class="secondary" id="reset-btn"><i class="fa fa-undo fa-md"></i><br>Reset</button>
-		</center>
-		<span class="toast" id="toast"></span>
-		<footer>
-			<p>fae2fae is designed and developed by <a href="https://jonstoler.me">Jonathan Stoler</a>. fae2fae uses <a href="http://minicss.org">mini.css</a> and <a href="https://socket.io">socket.io</a>. Fate Accelerated is licensed from <a href="http://evilhat.com">Evil Hat Productions</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</p>
-		</footer>
 		<script type="text/javascript" src="/js/socket.io.slim.js"></script>
 		<script type="text/javascript" src="/js/fae2fae.js"></script>
+		<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 	</body>
 </html>
